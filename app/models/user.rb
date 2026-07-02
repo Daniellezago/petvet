@@ -23,4 +23,3 @@ class User < ApplicationRecord
     role == "atendente"
   end
 end
-
