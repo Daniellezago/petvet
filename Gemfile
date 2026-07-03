@@ -63,6 +63,7 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
   gem "shoulda-matchers"
+  gem "pundit-matchers"
 end
 
 # Autenticação
@@ -71,3 +72,5 @@ gem "devise-jwt"
 
 # Para API
 gem "jwt"
+
+gem "pundit"

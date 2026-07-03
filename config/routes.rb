@@ -1,15 +1,39 @@
 Rails.application.routes.draw do
-  devise_for :users
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  # ================================
+  # ROTAS WEB (com views Rails)
+  # ================================
+  devise_for :users,
+             path: "",
+             path_names: {
+               sign_in: "login",
+               sign_out: "logout"
+             }
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
+  root to: "dashboard#index"
 
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  resources :tutores
+  resources :pets
+  resources :consultas
+  resources :vacinas
+  resources :agendamentos
+  resources :contratos
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  # ================================
+  # ROTAS API (JWT)
+  # ================================
+  namespace :api do
+    namespace :v1 do
+      devise_for :users,
+                 controllers: {
+                   sessions: "api/v1/users/sessions",
+                   registrations: "api/v1/users/registrations"
+                 }
+
+      resources :tutores, only: [:index, :show, :create, :update]
+      resources :pets, only: [:index, :show, :create, :update]
+      resources :consultas, only: [:index, :show, :create, :update]
+      resources :vacinas, only: [:index, :show, :create, :update]
+      resources :agendamentos, only: [:index, :show, :create, :update]
+    end
+  end
 end
