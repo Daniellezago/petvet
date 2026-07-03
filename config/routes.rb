@@ -29,11 +29,11 @@ Rails.application.routes.draw do
                    registrations: "api/v1/users/registrations"
                  }
 
-      resources :tutores, only: [:index, :show, :create, :update]
-      resources :pets, only: [:index, :show, :create, :update]
-      resources :consultas, only: [:index, :show, :create, :update]
-      resources :vacinas, only: [:index, :show, :create, :update]
-      resources :agendamentos, only: [:index, :show, :create, :update]
+      resources :tutores, only: [ :index, :show, :create, :update ]
+      resources :pets, only: [ :index, :show, :create, :update ]
+      resources :consultas, only: [ :index, :show, :create, :update ]
+      resources :vacinas, only: [ :index, :show, :create, :update ]
+      resources :agendamentos, only: [ :index, :show, :create, :update ]
     end
   end
 end
