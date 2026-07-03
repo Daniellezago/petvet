@@ -64,3 +64,10 @@ group :test do
   gem "selenium-webdriver"
   gem "shoulda-matchers"
 end
+
+# Autenticação
+gem "devise"
+gem "devise-jwt"
+
+# Para API
+gem "jwt"

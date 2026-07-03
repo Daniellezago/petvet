@@ -1,12 +1,16 @@
 class User < ApplicationRecord
-  has_secure_password
-  has_many :sessions, dependent: :destroy
+  devise :database_authenticatable,
+         :registerable,
+         :recoverable,
+         :rememberable,
+         :validatable,
+         :jwt_authenticatable,
+         jwt_revocation_strategy: JwtDenylist
 
   ROLES = %w[admin veterinario atendente].freeze
 
-  before_save { self.email_address = email_address.downcase }
+  before_save { self.email = email.downcase }
 
-  validates :email_address, presence: true, uniqueness: { case_sensitive: false }
   validates :role, presence: true, inclusion: { in: ROLES }
 
   scope :ativos, -> { where(ativo: true) }
