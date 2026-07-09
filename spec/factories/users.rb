@@ -1,21 +1,21 @@
 FactoryBot.define do
   factory :user do
-    email { Faker::Internet.unique.email }
-    password { "senha123" }
-    password_confirmation { "senha123" }
+    sequence(:email) { |n| "usuario#{n}@petvet.com" }
+    password { "@#PetVet2026!" }
+    password_confirmation { "@#PetVet2026!" }
     role { "atendente" }
     ativo { true }
-  end
 
-  trait :admin do
-    role { "admin" }
-  end
+    trait :admin do
+      role { "admin" }
+    end
 
-  trait :veterinario do
-    role { "veterinario" }
-  end
+    trait :veterinario do
+      role { "veterinario" }
+    end
 
-  trait :atendente do
-    role { "atendente" }
+    trait :atendente do
+      role { "atendente" }
+    end
   end
 end
