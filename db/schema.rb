@@ -10,13 +10,27 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_03_183322) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_10_020529) do
   create_table "jwt_denylists", force: :cascade do |t|
     t.string "jti"
     t.datetime "exp"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["jti"], name: "index_jwt_denylists_on_jti"
+  end
+
+  create_table "pets", force: :cascade do |t|
+    t.string "nome", null: false
+    t.string "especie", null: false
+    t.string "raca"
+    t.integer "sexo", default: 0, null: false
+    t.date "data_nascimento"
+    t.decimal "peso_atual", precision: 5, scale: 2
+    t.integer "tutor_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["nome"], name: "index_pets_on_nome"
+    t.index ["tutor_id"], name: "index_pets_on_tutor_id"
   end
 
   create_table "tutors", force: :cascade do |t|
@@ -26,7 +40,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_03_183322) do
     t.string "cpf"
     t.string "endereco"
     t.boolean "ativo"
-    t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -44,4 +57,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_03_183322) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
+
+  add_foreign_key "pets", "tutors"
 end
