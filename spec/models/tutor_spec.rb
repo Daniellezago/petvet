@@ -22,12 +22,22 @@ RSpec.describe Tutor, type: :model do
     end
   end
 
-  # Soft delete
+
   describe "soft delete" do
-    it "não apaga do banco, só marca deleted_at" do
+    it "permite marcar o tutor como inativo sem removê-lo do banco" do
       tutor = create(:tutor)
-      tutor.destroy
-      expect(Tutor.only_deleted.find(tutor.id)).to be_present
+      tutor.update!(ativo: false)
+
+      expect(Tutor.exists?(tutor.id)).to be true
+      expect(tutor.reload.ativo).to be false
+    end
+
+    it "não retorna tutores inativos no scope :ativos" do
+      ativo = create(:tutor, ativo: true)
+      inativo = create(:tutor, ativo: false)
+
+      expect(Tutor.ativos).to include(ativo)
+      expect(Tutor.ativos).not_to include(inativo)
     end
   end
 
