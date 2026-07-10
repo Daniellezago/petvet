@@ -1,16 +1,14 @@
 class Tutor < ApplicationRecord
-  acts_as_paranoid
-
-  # has_many :pets, dependent: :destroy
-  # has_many :contratos, dependent: :destroy
+  has_many :pets, dependent: :restrict_with_error
 
   before_save { self.email = email.downcase if email.present? }
 
   validates :nome, presence: true
   validates :email, presence: true,
-                    uniqueness: { case_sensitive: false },
+                    uniqueness: { case_sensitive: false, conditions: -> { where(ativo: true) } },
                     format: { with: URI::MailTo::EMAIL_REGEXP }
-  validates :cpf, presence: true, uniqueness: true
+  validates :cpf, presence: true,
+                  uniqueness: { conditions: -> { where(ativo: true) } }
   validates :telefone, presence: true
 
   scope :ativos, -> { where(ativo: true) }
