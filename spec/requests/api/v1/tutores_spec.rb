@@ -32,38 +32,63 @@ RSpec.describe "Api::V1::Tutores", type: :request do
   end
 
   describe "POST /api/v1/tutores" do
-    let(:params) do
-      {
-        tutor: {
-          nome: "João Silva",
-          email: "joao@email.com",
-          telefone: "11999999999",
-          cpf: "123.456.789-00",
-          endereco: "Rua Teste, 123"
-        }
+  let(:params) do
+    {
+      tutor: {
+        nome: "João Silva",
+        email: "joao@email.com",
+        telefone: "11999999999",
+        cpf: "123.456.789-00",
+        endereco: "Rua Teste, 123"
       }
-    end
+    }
+  end
 
-    it "cria tutor com dados válidos" do
+  it "cria tutor com dados válidos" do
+    post "/api/v1/tutores",
+         params: params,
+         headers: auth_headers(admin),
+         as: :json
+
+    expect(response).to have_http_status(:created)
+    expect(JSON.parse(response.body)["nome"]).to eq("João Silva")
+  end
+
+  it "retorna erros com dados inválidos" do
+    post "/api/v1/tutores",
+         params: { tutor: { nome: "" } },
+         headers: auth_headers(admin),
+         as: :json
+
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(JSON.parse(response.body)).to have_key("errors")
+  end
+
+  it "permite recadastrar CPF/email já usados por um tutor inativo (soft delete)" do
+    tutor_antigo = create(:tutor, cpf: params[:tutor][:cpf], email: params[:tutor][:email])
+    tutor_antigo.update!(ativo: false)
+
+    expect {
       post "/api/v1/tutores",
            params: params,
            headers: auth_headers(admin),
            as: :json
+    }.to change(Tutor, :count).by(1)
 
-      expect(response).to have_http_status(:created)
-      expect(JSON.parse(response.body)["nome"]).to eq("João Silva")
-    end
-
-    it "retorna erros com dados inválidos" do
-      post "/api/v1/tutores",
-           params: { tutor: { nome: "" } },
-           headers: auth_headers(admin),
-           as: :json
-
-      expect(response).to have_http_status(:unprocessable_content)
-      expect(JSON.parse(response.body)).to have_key("errors")
-    end
+    expect(response).to have_http_status(:created)
   end
+
+  it "bloqueia CPF/email duplicado se o tutor original estiver ativo" do
+    create(:tutor, cpf: params[:tutor][:cpf], email: params[:tutor][:email])
+
+    post "/api/v1/tutores",
+         params: params,
+         headers: auth_headers(admin),
+         as: :json
+
+    expect(response).to have_http_status(:unprocessable_content)
+  end
+end
 
   describe "PATCH /api/v1/tutores/:id" do
     it "atualiza os dados do tutor autenticado" do
