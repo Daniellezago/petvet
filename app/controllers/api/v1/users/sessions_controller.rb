@@ -2,7 +2,7 @@ module Api
   module V1
     module Users
       class SessionsController < Devise::SessionsController
-        skip_before_action :authenticate_user!, only: [:create], raise: false
+        skip_before_action :authenticate_user!, only: [ :create ], raise: false
         respond_to :json
 
           private

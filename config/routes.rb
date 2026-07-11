@@ -38,7 +38,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :tutores, only: [ :index, :show, :create, :update, :destroy]
+      resources :tutores, only: [ :index, :show, :create, :update, :destroy ]
       # Pet NUNCA  deve ter rota de destroy - histórico médico é permanente
       resources :pets, only: [ :index, :show, :create, :update ]
       resources :consultas, only: [ :index, :show, :create, :update ]

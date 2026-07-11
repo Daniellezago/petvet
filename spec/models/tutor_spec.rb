@@ -43,7 +43,6 @@ RSpec.describe Tutor, type: :model do
 
   # Relacionamentos
   describe "relacionamentos" do
-    
   end
 
   # Normalização de email

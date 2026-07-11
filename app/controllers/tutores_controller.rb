@@ -1,5 +1,5 @@
 class TutoresController < ApplicationController
-  before_action :set_tutor, only: [:show, :edit, :update, :destroy]
+  before_action :set_tutor, only: [ :show, :edit, :update, :destroy ]
   after_action :verify_authorized
 
   def index

@@ -1,4 +1,4 @@
-class PetPolicy < ApplicationPolicy
+class ConsultaPolicy < ApplicationPolicy
   def index?
     true
   end
@@ -15,6 +15,7 @@ class PetPolicy < ApplicationPolicy
     true
   end
 
+  # Consulta nunca pode ser removida — histórico médico é permanente.
   def destroy?
     false
   end
