@@ -1,6 +1,6 @@
 class Pet < ApplicationRecord
-  belongs_to :tutor
-
+  belongs_to :tutor 
+  has_many :consultas, dependent: :restrict_with_error
   enum :sexo, { macho: 0, femea: 1 }
 
   validates :nome, presence: true
