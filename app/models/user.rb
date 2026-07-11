@@ -4,25 +4,10 @@ class User < ApplicationRecord
          :jwt_authenticatable,
          jwt_revocation_strategy: JwtDenylist
 
-  ROLES = %w[admin veterinario atendente].freeze
-
-  PASSWORD_COMPLEXITY = /\A
-    (?=.*[a-z])       # ao menos uma minúscula
-    (?=.*[A-Z])       # ao menos uma maiúscula
-    (?=.*\d)          # ao menos um número
-    (?=.*[^A-Za-z0-9]) # ao menos um caractere especial
-  /x
+  enum :role, { admin: 0, veterinario: 1, atendente: 2 }, default: :atendente
 
   before_save { self.email = email.downcase }
-  validates :role, presence: true, inclusion: { in: ROLES }
-  validates :password, format: {
-    with: PASSWORD_COMPLEXITY,
-    message: "deve conter maiúscula, minúscula, número e caractere especial"
-  }, if: -> { password.present? }
+  validates :role, presence: true
 
   scope :ativos, -> { where(ativo: true) }
-
-  def admin? = role == "admin"
-  def veterinario? = role == "veterinario"
-  def atendente? = role == "atendente"
 end
