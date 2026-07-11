@@ -57,6 +57,11 @@ O sistema possui três papéis distintos, cada um com permissões específicas v
 - Mesma proteção contra remoção aplicada ao Pet: histórico médico permanente, bloqueado em três camadas (rota, policy, model)
 - Validação de negócio: data da consulta não pode ser futura
 
+### Vacina
+- CRUD via API (`index`, `show`, `create`, `update`)
+- Vinculada a um Pet e a um Usuário responsável, mesmo padrão de auditoria e proteção contra remoção da Consulta
+- Validações de negócio próprias: data de aplicação não pode ser futura, e a próxima dose (quando informada) deve ser posterior à data de aplicação
+
 ---
 
 ## 🧪 Testes
@@ -67,7 +72,7 @@ O projeto segue **TDD** com cobertura crescente via RSpec.
 bundle exec rspec
 ```
 
-Estado atual: **105 exemplos, 0 falhas** (7 pendências são apenas placeholders de views/helpers ainda não implementados, gerados automaticamente pelo scaffold do Rails).
+Estado atual: **128 exemplos, 0 falhas** (7 pendências são apenas placeholders de views/helpers ainda não implementados, gerados automaticamente pelo scaffold do Rails).
 
 Principais suítes:
 - `spec/models` — validações, associações, regras de negócio (ex: proteção contra `destroy`, datas que não podem ser futuras)
@@ -104,7 +109,8 @@ bin/rails s
 
 - [x] Migração de `role` (User) e `sexo` (Pet) para enums nativos do Rails
 - [x] Model Consulta (histórico médico permanente, com auditoria automática do usuário responsável)
-- [ ] Model Vacina e Exame (mesmo padrão de Consulta: histórico permanente + auditoria)
+- [x] Model Vacina (mesmo padrão de Consulta: histórico permanente + auditoria)
+- [ ] Model Exame (mesmo padrão + Active Storage para upload)
 - [ ] Model Receituário
 - [ ] Model Agendamento e Contrato/Plano (`status` do Agendamento já nasce como enum nativo, sem dívida técnica)
 - [ ] Upload de exames via Active Storage, com validação estrita de Content-Type (PDF, JPEG, PNG)
