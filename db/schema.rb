@@ -10,7 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_11_025941) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_11_032724) do
+  create_table "consultas", force: :cascade do |t|
+    t.datetime "data", null: false
+    t.text "descricao", null: false
+    t.text "diagnostico"
+    t.text "tratamento"
+    t.text "observacoes"
+    t.integer "pet_id", null: false
+    t.integer "usuario_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["data"], name: "index_consultas_on_data"
+    t.index ["pet_id"], name: "index_consultas_on_pet_id"
+    t.index ["usuario_id"], name: "index_consultas_on_usuario_id"
+  end
+
   create_table "jwt_denylists", force: :cascade do |t|
     t.string "jti"
     t.datetime "exp"
@@ -58,5 +73,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_11_025941) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "consultas", "pets"
+  add_foreign_key "consultas", "users", column: "usuario_id"
   add_foreign_key "pets", "tutors"
 end
