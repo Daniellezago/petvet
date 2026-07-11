@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_11_032724) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_11_191117) do
   create_table "consultas", force: :cascade do |t|
     t.datetime "data", null: false
     t.text "descricao", null: false
@@ -73,7 +73,25 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_11_032724) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "vacinas", force: :cascade do |t|
+    t.string "nome", null: false
+    t.date "data_aplicacao", null: false
+    t.date "proxima_dose"
+    t.string "lote"
+    t.string "fabricante"
+    t.text "observacoes"
+    t.integer "pet_id", null: false
+    t.integer "usuario_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["data_aplicacao"], name: "index_vacinas_on_data_aplicacao"
+    t.index ["pet_id"], name: "index_vacinas_on_pet_id"
+    t.index ["usuario_id"], name: "index_vacinas_on_usuario_id"
+  end
+
   add_foreign_key "consultas", "pets"
   add_foreign_key "consultas", "users", column: "usuario_id"
   add_foreign_key "pets", "tutors"
+  add_foreign_key "vacinas", "pets"
+  add_foreign_key "vacinas", "users", column: "usuario_id"
 end
