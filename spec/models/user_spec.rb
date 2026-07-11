@@ -4,7 +4,13 @@ RSpec.describe User, type: :model do
   # Validações
   it { should validate_presence_of(:email) }
   it { should validate_presence_of(:role) }
-  it { should validate_inclusion_of(:role).in_array(%w[admin veterinario atendente]) }
+  it "aceita apenas os valores definidos no enum" do
+  expect { build(:user, role: "hacker") }.to raise_error(ArgumentError)
+end
+
+it "possui os três papéis esperados" do
+  expect(User.roles.keys).to contain_exactly("admin", "veterinario", "atendente")
+end
 
   describe "email único" do
     it "não permite dois usuários com o mesmo email" do

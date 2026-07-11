@@ -17,7 +17,7 @@ Rails.application.routes.draw do
 
   root to: "dashboard#index"
   resources :tutores
-  resources :pets
+  resources :pets, only: [ :index, :show, :create, :update ]
   resources :consultas
   resources :vacinas
   resources :agendamentos
@@ -39,6 +39,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :tutores, only: [ :index, :show, :create, :update, :destroy]
+      # Pet NUNCA  deve ter rota de destroy - histórico médico é permanente
       resources :pets, only: [ :index, :show, :create, :update ]
       resources :consultas, only: [ :index, :show, :create, :update ]
       resources :vacinas, only: [ :index, :show, :create, :update ]

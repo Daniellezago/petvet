@@ -75,7 +75,6 @@ gem "jwt"
 
 gem "pundit"
 
-gem "acts_as_paranoid" # soft delete authentication
 gem "kaminari" # paginação
 
 gem "cpf_faker"
