@@ -50,6 +50,13 @@ O sistema possui três papéis distintos, cada um com permissões específicas v
   3. O próprio model bloqueia `destroy`/`destroy!` via callback, mesmo se chamado diretamente (ex: console Rails)
 - Reatribuição de tutor bloqueada em updates: `tutor_id` só é aceito na criação do pet, nunca em uma edição posterior — evita que um pet seja "transferido" de tutor sem controle
 
+### Consulta
+- CRUD via API (`index`, `show`, `create`, `update`)
+- Vinculada a um Pet e a um Usuário responsável (`belongs_to`)
+- **Auditoria automática e testada:** o `usuario_id` nunca é aceito via parâmetros do request — é sempre injetado a partir do usuário autenticado (`current_user`) no momento da criação. Um teste dedicado confirma que, mesmo enviando um `usuario_id` diferente no corpo da requisição, o sistema ignora esse valor e grava sempre quem de fato está logado
+- Mesma proteção contra remoção aplicada ao Pet: histórico médico permanente, bloqueado em três camadas (rota, policy, model)
+- Validação de negócio: data da consulta não pode ser futura
+
 ---
 
 ## 🧪 Testes
@@ -60,12 +67,12 @@ O projeto segue **TDD** com cobertura crescente via RSpec.
 bundle exec rspec
 ```
 
-Estado atual: **84 exemplos, 0 falhas** (7 pendências são apenas placeholders de views/helpers ainda não implementados).
+Estado atual: **105 exemplos, 0 falhas** (7 pendências são apenas placeholders de views/helpers ainda não implementados, gerados automaticamente pelo scaffold do Rails).
 
 Principais suítes:
-- `spec/models` — validações, associações, regras de negócio
-- `spec/policies` — regras de autorização por papel
-- `spec/requests/api/v1` — comportamento da API ponta a ponta (autenticação, permissões, status HTTP)
+- `spec/models` — validações, associações, regras de negócio (ex: proteção contra `destroy`, datas que não podem ser futuras)
+- `spec/policies` — regras de autorização por papel (admin/veterinário/atendente)
+- `spec/requests/api/v1` — comportamento da API ponta a ponta (autenticação JWT, permissões, status HTTP, auditoria)
 
 ---
 
@@ -95,11 +102,12 @@ bin/rails s
 
 ## 🗺️ Roadmap
 
-- [ ] Model Consulta, Vacina, Exame e Receituário (histórico médico, também com proteção contra remoção)
-- [ ] Model Agendamento e Contrato/Plano
-- [ ] Migração de `role` (User), `sexo` (Pet) e `status` (Agendamento) para enums nativos do Rails
+- [x] Migração de `role` (User) e `sexo` (Pet) para enums nativos do Rails
+- [x] Model Consulta (histórico médico permanente, com auditoria automática do usuário responsável)
+- [ ] Model Vacina e Exame (mesmo padrão de Consulta: histórico permanente + auditoria)
+- [ ] Model Receituário
+- [ ] Model Agendamento e Contrato/Plano (`status` do Agendamento já nasce como enum nativo, sem dívida técnica)
 - [ ] Upload de exames via Active Storage, com validação estrita de Content-Type (PDF, JPEG, PNG)
-- [ ] Auditoria automática: `usuario_id` de consultas/vacinas/exames sempre injetado a partir do usuário autenticado, nunca aceito via formulário
 - [ ] Construção das views web (interface visual)
 - [ ] Containerização com Docker (fase avançada — atualmente o projeto roda localmente via asdf)
 
@@ -108,6 +116,7 @@ bin/rails s
 ## 📌 Decisões técnicas de destaque
 
 - **Soft delete com unicidade escopada:** em vez de bloquear permanentemente CPF/e-mail já usados, a validação de unicidade considera apenas registros ativos — resolvendo um problema comum em sistemas de cadastro com histórico.
-- **Proteção em camadas (defense in depth):** a regra "Pet nunca é removido" não depende de um único ponto de falha — está garantida na rota, na policy e no model, então mesmo um erro de código em uma camada não quebra a garantia.
+- **Proteção em camadas (defense in depth):** a regra "histórico médico nunca é removido" (Pet, Consulta) não depende de um único ponto de falha — está garantida na rota, na policy e no model, então mesmo um erro de código em uma camada não quebra a garantia.
 - **Separação de parâmetros por ação:** `tutor_id` é permitido apenas no `create` de Pet, nunca no `update`, evitando reatribuições não auditadas.
-
+- **Auditoria real, não decorativa:** o `usuario_id` de uma Consulta nunca vem do request — é sempre injetado a partir do usuário autenticado no controller. Um teste dedicado tenta ativamente burlar essa regra (enviando um `usuario_id` diferente no corpo da requisição) para confirmar que o sistema realmente ignora esse valor.
+- **Inflexão de nomes em português:** o Rails, por padrão, assume regras de pluralização em inglês. Palavras terminadas em `"ta"` (como `Consulta`) são tratadas como já plurais, o que fazia `Consulta.table_name` resolver incorretamente para `"consulta"` em vez de `"consultas"`. Corrigido com uma regra de inflexão irregular em `config/initializers/inflections.rb` — um cuidado necessário em qualquer projeto Rails em português.
