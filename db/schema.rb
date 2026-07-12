@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_11_191117) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_11_205512) do
   create_table "consultas", force: :cascade do |t|
     t.datetime "data", null: false
     t.text "descricao", null: false
@@ -24,6 +24,20 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_11_191117) do
     t.index ["data"], name: "index_consultas_on_data"
     t.index ["pet_id"], name: "index_consultas_on_pet_id"
     t.index ["usuario_id"], name: "index_consultas_on_usuario_id"
+  end
+
+  create_table "exames", force: :cascade do |t|
+    t.string "tipo_exame", null: false
+    t.date "data", null: false
+    t.text "resultado"
+    t.text "observacoes"
+    t.integer "pet_id", null: false
+    t.integer "usuario_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["data"], name: "index_exames_on_data"
+    t.index ["pet_id"], name: "index_exames_on_pet_id"
+    t.index ["usuario_id"], name: "index_exames_on_usuario_id"
   end
 
   create_table "jwt_denylists", force: :cascade do |t|
@@ -91,6 +105,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_11_191117) do
 
   add_foreign_key "consultas", "pets"
   add_foreign_key "consultas", "users", column: "usuario_id"
+  add_foreign_key "exames", "pets"
+  add_foreign_key "exames", "users", column: "usuario_id"
   add_foreign_key "pets", "tutors"
   add_foreign_key "vacinas", "pets"
   add_foreign_key "vacinas", "users", column: "usuario_id"
