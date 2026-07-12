@@ -44,6 +44,7 @@ Rails.application.routes.draw do
       resources :consultas, only: [ :index, :show, :create, :update ]
       resources :vacinas, only: [ :index, :show, :create, :update ]
       resources :agendamentos, only: [ :index, :show, :create, :update ]
+      resources :exames, only: [ :index, :show, :create, :update ]
     end
   end
 end
