@@ -62,6 +62,11 @@ O sistema possui três papéis distintos, cada um com permissões específicas v
 - Vinculada a um Pet e a um Usuário responsável, mesmo padrão de auditoria e proteção contra remoção da Consulta
 - Validações de negócio próprias: data de aplicação não pode ser futura, e a próxima dose (quando informada) deve ser posterior à data de aplicação
 
+### Exame
+- CRUD via API (`index`, `show`, `create`, `update`)
+- Vinculado a um Pet e a um Usuário responsável, mesmo padrão de auditoria e proteção contra remoção de Consulta e Vacina
+- Upload de arquivo (laudo em PDF/imagem) via Active Storage planejado como próxima etapa, mantido separado da criação do model para isolar eventuais problemas de configuração
+
 ---
 
 ## 🧪 Testes
@@ -72,7 +77,7 @@ O projeto segue **TDD** com cobertura crescente via RSpec.
 bundle exec rspec
 ```
 
-Estado atual: **128 exemplos, 0 falhas** (7 pendências são apenas placeholders de views/helpers ainda não implementados, gerados automaticamente pelo scaffold do Rails).
+Estado atual: **148 exemplos, 0 falhas** (7 pendências são apenas placeholders de views/helpers ainda não implementados, gerados automaticamente pelo scaffold do Rails).
 
 Principais suítes:
 - `spec/models` — validações, associações, regras de negócio (ex: proteção contra `destroy`, datas que não podem ser futuras)
@@ -110,10 +115,10 @@ bin/rails s
 - [x] Migração de `role` (User) e `sexo` (Pet) para enums nativos do Rails
 - [x] Model Consulta (histórico médico permanente, com auditoria automática do usuário responsável)
 - [x] Model Vacina (mesmo padrão de Consulta: histórico permanente + auditoria)
-- [ ] Model Exame (mesmo padrão + Active Storage para upload)
+- [x] Model Exame (mesmo padrão + Active Storage para upload, ainda por vir)
+- [ ] Upload de exames via Active Storage, com validação estrita de Content-Type (PDF, JPEG, PNG)
 - [ ] Model Receituário
 - [ ] Model Agendamento e Contrato/Plano (`status` do Agendamento já nasce como enum nativo, sem dívida técnica)
-- [ ] Upload de exames via Active Storage, com validação estrita de Content-Type (PDF, JPEG, PNG)
 - [ ] Construção das views web (interface visual)
 - [ ] Containerização com Docker (fase avançada — atualmente o projeto roda localmente via asdf)
 
