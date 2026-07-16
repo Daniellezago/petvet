@@ -43,7 +43,7 @@ module Api
 
       # usuario_id NÃO está na lista — é sempre definido pelo controller
       def exame_params
-        params.require(:exame).permit(:tipo_exame, :data, :resultado, :observacoes, :pet_id)
+        params.require(:exame).permit(:tipo_exame, :data, :resultado, :observacoes, :pet_id, :arquivo)
       end
     end
   end
