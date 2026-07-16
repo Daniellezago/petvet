@@ -9,8 +9,8 @@ RSpec.describe "Api::V1::Exames", type: :request do
 
   def auth_headers(user)
     post "/api/v1/users/sign_in",
-         params: { user: { email: user.email, password: senha } },
-         as: :json
+        params: { user: { email: user.email, password: senha } },
+        as: :json
 
     { "Authorization" => response.headers["Authorization"] }
   end
@@ -70,9 +70,9 @@ RSpec.describe "Api::V1::Exames", type: :request do
     it "cria exame vinculado ao usuário autenticado" do
       expect {
         post "/api/v1/exames",
-             params: params_validos,
-             headers: auth_headers(admin),
-             as: :json
+            params: params_validos,
+            headers: auth_headers(admin),
+            as: :json
       }.to change(Exame, :count).by(1)
 
       expect(response).to have_http_status(:created)
@@ -82,9 +82,9 @@ RSpec.describe "Api::V1::Exames", type: :request do
 
     it "IGNORA usuario_id enviado no corpo da requisição e usa o usuário autenticado (auditoria)" do
       post "/api/v1/exames",
-           params: params_validos.deep_merge(exame: { usuario_id: outro_usuario.id }),
-           headers: auth_headers(admin),
-           as: :json
+          params: params_validos.deep_merge(exame: { usuario_id: outro_usuario.id }),
+          headers: auth_headers(admin),
+          as: :json
 
       expect(response).to have_http_status(:created)
       body = JSON.parse(response.body)
@@ -95,9 +95,9 @@ RSpec.describe "Api::V1::Exames", type: :request do
 
     it "retorna 422 sem pet_id" do
       post "/api/v1/exames",
-           params: { exame: params_validos[:exame].except(:pet_id) },
-           headers: auth_headers(admin),
-           as: :json
+          params: { exame: params_validos[:exame].except(:pet_id) },
+          headers: auth_headers(admin),
+          as: :json
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(JSON.parse(response.body)).to have_key("errors")
@@ -105,9 +105,9 @@ RSpec.describe "Api::V1::Exames", type: :request do
 
     it "retorna 422 com data futura" do
       post "/api/v1/exames",
-           params: params_validos.deep_merge(exame: { data: 1.day.from_now }),
-           headers: auth_headers(admin),
-           as: :json
+          params: params_validos.deep_merge(exame: { data: 1.day.from_now }),
+          headers: auth_headers(admin),
+          as: :json
 
       expect(response).to have_http_status(:unprocessable_content)
     end
@@ -115,6 +115,30 @@ RSpec.describe "Api::V1::Exames", type: :request do
     it "retorna 401 sem autenticação" do
       post "/api/v1/exames", params: params_validos, as: :json
       expect(response).to have_http_status(:unauthorized)
+    end
+
+    it "aceita o upload de um arquivo PDF" do
+      arquivo = fixture_file_upload("laudo_teste.pdf", "application/pdf")
+
+      post "/api/v1/exames",
+          params: { exame: params_validos[:exame].merge(arquivo: arquivo) },
+          headers: auth_headers(admin)
+
+      expect(response).to have_http_status(:created)
+      exame_criado = Exame.last
+      expect(exame_criado.arquivo).to be_attached
+      expect(exame_criado.arquivo.content_type).to eq("application/pdf")
+    end
+
+    it "rejeita o upload de um arquivo de tipo não permitido" do
+      arquivo = fixture_file_upload("laudo_teste.pdf", "text/plain")
+
+      post "/api/v1/exames",
+          params: { exame: params_validos[:exame].merge(arquivo: arquivo) },
+          headers: auth_headers(admin)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(JSON.parse(response.body)["errors"]).to include("Arquivo deve ser um arquivo PDF, JPEG ou PNG")
     end
   end
 
