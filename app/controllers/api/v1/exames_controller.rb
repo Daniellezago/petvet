@@ -4,9 +4,9 @@ module Api
       before_action :set_exame, only: [ :show, :update ]
 
       def index
-        exames = policy_scope(Exame)
-        render json: exames
-      end
+      exames = policy_scope(Exame).includes(:pet, :usuario)
+      render json: exames
+end
 
       def show
         authorize @exame

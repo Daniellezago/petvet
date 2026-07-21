@@ -4,9 +4,9 @@ module Api
       before_action :set_consulta, only: [ :show, :update ]
 
       def index
-        consultas = policy_scope(Consulta)
-        render json: consultas
-      end
+  consultas = policy_scope(Consulta).includes(:pet, :usuario)
+  render json: consultas
+end
 
       def show
         authorize @consulta

@@ -4,9 +4,9 @@ module Api
       before_action :set_vacina, only: [ :show, :update ]
 
       def index
-        vacinas = policy_scope(Vacina)
+        vacinas = policy_scope(Vacina).includes(:pet, :usuario)
         render json: vacinas
-      end
+end
 
       def show
         authorize @vacina
