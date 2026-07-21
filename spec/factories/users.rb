@@ -12,6 +12,7 @@ FactoryBot.define do
 
     trait :veterinario do
       role { "veterinario" }
+      crmv { "CRMV-SP #{rand(10000..99999)}" }
     end
 
     trait :atendente do

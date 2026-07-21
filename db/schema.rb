@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_12_011910) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_17_031548) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -90,6 +90,23 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_12_011910) do
     t.index ["tutor_id"], name: "index_pets_on_tutor_id"
   end
 
+  create_table "receituarios", force: :cascade do |t|
+    t.integer "tipo_receituario", default: 0, null: false
+    t.string "medicamento", null: false
+    t.text "posologia", null: false
+    t.string "duracao_tratamento"
+    t.text "observacoes"
+    t.string "crmv_responsavel", null: false
+    t.date "data_emissao", null: false
+    t.integer "pet_id", null: false
+    t.integer "usuario_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["data_emissao"], name: "index_receituarios_on_data_emissao"
+    t.index ["pet_id"], name: "index_receituarios_on_pet_id"
+    t.index ["usuario_id"], name: "index_receituarios_on_usuario_id"
+  end
+
   create_table "tutors", force: :cascade do |t|
     t.string "nome"
     t.string "email"
@@ -111,6 +128,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_12_011910) do
     t.datetime "updated_at", null: false
     t.boolean "ativo", default: true, null: false
     t.integer "role", default: 2, null: false
+    t.string "crmv"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -138,6 +156,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_12_011910) do
   add_foreign_key "exames", "pets"
   add_foreign_key "exames", "users", column: "usuario_id"
   add_foreign_key "pets", "tutors"
+  add_foreign_key "receituarios", "pets"
+  add_foreign_key "receituarios", "users", column: "usuario_id"
   add_foreign_key "vacinas", "pets"
   add_foreign_key "vacinas", "users", column: "usuario_id"
 end
