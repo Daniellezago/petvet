@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_17_031548) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_21_195801) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -37,6 +37,21 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_17_031548) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "agendamentos", force: :cascade do |t|
+    t.datetime "data_hora", null: false
+    t.integer "status", default: 0, null: false
+    t.text "observacoes"
+    t.integer "tutor_id", null: false
+    t.integer "pet_id", null: false
+    t.integer "usuario_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["data_hora"], name: "index_agendamentos_on_data_hora"
+    t.index ["pet_id"], name: "index_agendamentos_on_pet_id"
+    t.index ["tutor_id"], name: "index_agendamentos_on_tutor_id"
+    t.index ["usuario_id"], name: "index_agendamentos_on_usuario_id"
   end
 
   create_table "consultas", force: :cascade do |t|
@@ -151,6 +166,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_17_031548) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "agendamentos", "pets"
+  add_foreign_key "agendamentos", "tutors"
+  add_foreign_key "agendamentos", "users", column: "usuario_id"
   add_foreign_key "consultas", "pets"
   add_foreign_key "consultas", "users", column: "usuario_id"
   add_foreign_key "exames", "pets"
