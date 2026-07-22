@@ -1,6 +1,7 @@
 class Tutor < ApplicationRecord
   has_many :pets, dependent: :restrict_with_error
   has_many :agendamentos, dependent: :restrict_with_error
+  has_many :contratos, dependent: :restrict_with_error
 
   before_save { self.email = email.downcase if email.present? }
 

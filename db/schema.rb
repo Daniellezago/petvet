@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_21_195801) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_22_010409) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -67,6 +67,22 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_21_195801) do
     t.index ["data"], name: "index_consultas_on_data"
     t.index ["pet_id"], name: "index_consultas_on_pet_id"
     t.index ["usuario_id"], name: "index_consultas_on_usuario_id"
+  end
+
+  create_table "contratos", force: :cascade do |t|
+    t.integer "tipo_contrato", default: 0, null: false
+    t.string "nome_convenio"
+    t.string "numero_carteirinha"
+    t.decimal "percentual_cobertura", precision: 5, scale: 2
+    t.date "data_inicio", null: false
+    t.date "data_fim"
+    t.integer "tutor_id", null: false
+    t.integer "pet_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["numero_carteirinha"], name: "index_contratos_on_numero_carteirinha"
+    t.index ["pet_id"], name: "index_contratos_on_pet_id"
+    t.index ["tutor_id"], name: "index_contratos_on_tutor_id"
   end
 
   create_table "exames", force: :cascade do |t|
@@ -171,6 +187,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_21_195801) do
   add_foreign_key "agendamentos", "users", column: "usuario_id"
   add_foreign_key "consultas", "pets"
   add_foreign_key "consultas", "users", column: "usuario_id"
+  add_foreign_key "contratos", "pets"
+  add_foreign_key "contratos", "tutors"
   add_foreign_key "exames", "pets"
   add_foreign_key "exames", "users", column: "usuario_id"
   add_foreign_key "pets", "tutors"

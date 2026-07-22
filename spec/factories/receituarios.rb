@@ -9,7 +9,7 @@ FactoryBot.define do
     association :pet
     association :usuario, factory: [ :user, :veterinario ]
     crmv_responsavel { usuario.crmv }
-    
+
     trait :controle_especial do
       tipo_receituario { :controle_especial }
       medicamento { "Tramadol 50mg" }

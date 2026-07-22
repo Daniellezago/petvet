@@ -1,10 +1,6 @@
 class Pet < ApplicationRecord
   belongs_to :tutor
-  has_many :consultas, dependent: :restrict_with_error
-  has_many :vacinas, dependent: :restrict_with_error
-  has_many :exames, dependent: :restrict_with_error
-  has_many :receituarios, dependent: :restrict_with_error
-  
+
   enum :sexo, { macho: 0, femea: 1 }
 
   validates :nome, presence: true
@@ -16,8 +12,13 @@ class Pet < ApplicationRecord
 
   validate :data_nascimento_nao_pode_ser_futura
 
-  # Pet nunca pode ser destruído — histórico médico é permanente
-  # (auditoria legal da clínica + acesso do tutor ao histórico completo).
+  has_many :consultas, dependent: :restrict_with_error
+  has_many :vacinas, dependent: :restrict_with_error
+  has_many :exames, dependent: :restrict_with_error
+  has_many :receituarios, dependent: :restrict_with_error
+  has_many :agendamentos, dependent: :restrict_with_error
+  has_many :contratos, dependent: :restrict_with_error
+
   before_destroy :impedir_destroy
 
   private
