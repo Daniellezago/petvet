@@ -43,9 +43,9 @@ Rails.application.routes.draw do
       resources :pets, only: [ :index, :show, :create, :update ]
       resources :consultas, only: [ :index, :show, :create, :update ]
       resources :vacinas, only: [ :index, :show, :create, :update ]
-      resources :agendamentos, only: [ :index, :show, :create, :update ]
+      resources :agendamentos, only: [ :index, :show, :create, :update, :destroy ]
       resources :exames, only: [ :index, :show, :create, :update ]
       resources :receituarios, only: [ :index, :show, :create, :update ]
-     end
+    end
   end
 end
