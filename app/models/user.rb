@@ -9,6 +9,7 @@ class User < ApplicationRecord
   has_many :vacinas, foreign_key: :usuario_id, dependent: :restrict_with_error
   has_many :exames, foreign_key: :usuario_id, dependent: :restrict_with_error
   has_many :receituarios, foreign_key: :usuario_id, dependent: :restrict_with_error
+  has_many :agendamentos, foreign_key: :usuario_id, dependent: :restrict_with_error
   
   before_save { self.email = email.downcase }
   validates :role, presence: true
