@@ -46,6 +46,7 @@ Rails.application.routes.draw do
       resources :agendamentos, only: [ :index, :show, :create, :update, :destroy ]
       resources :exames, only: [ :index, :show, :create, :update ]
       resources :receituarios, only: [ :index, :show, :create, :update ]
+      resources :contratos, only: [ :index, :show, :create, :update, :destroy ]
     end
   end
 end
