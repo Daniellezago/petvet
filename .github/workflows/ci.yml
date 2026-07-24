@@ -68,6 +68,7 @@ jobs:
       - name: Set up database
         env:
           RAILS_ENV: test
+          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
         run: |
           bin/rails db:create
           bin/rails db:schema:load
@@ -75,5 +76,6 @@ jobs:
       - name: Run tests
         env:
           RAILS_ENV: test
+          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
         run: bundle exec rspec
 
