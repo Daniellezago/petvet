@@ -4,9 +4,16 @@ module Api
       before_action :set_pet, only: [ :show, :update ]
 
       def index
-        pets = policy_scope(Pet)
-        render json: pets
-      end
+        pets = policy_scope(Pet).page(params[:page]).per(20)
+        render json: {
+          pets: pets,
+          meta: {
+            pagina_atual: pets.current_page,
+            total_paginas: pets.total_pages,
+            total_registros: pets.total_count
+    }
+  }
+end
 
       def show
         authorize @pet

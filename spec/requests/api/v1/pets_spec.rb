@@ -7,8 +7,8 @@ RSpec.describe "Api::V1::Pets", type: :request do
 
   def auth_headers(user)
     post "/api/v1/users/sign_in",
-         params: { user: { email: user.email, password: senha } },
-         as: :json
+        params: { user: { email: user.email, password: senha } },
+        as: :json
 
     { "Authorization" => response.headers["Authorization"] }
   end
@@ -21,8 +21,8 @@ RSpec.describe "Api::V1::Pets", type: :request do
       pet = create(:pet, tutor: tutor)
 
       delete "/api/v1/pets/#{pet.id}",
-             headers: auth_headers(admin),
-             as: :json
+            headers: auth_headers(admin),
+            as: :json
 
       expect(response).to have_http_status(:not_found)
       expect(Pet.exists?(pet.id)).to be true
@@ -40,9 +40,11 @@ RSpec.describe "Api::V1::Pets", type: :request do
           headers: auth_headers(admin),
           as: :json
 
-      expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body).length).to eq(2)
-    end
+  expect(response).to have_http_status(:ok)
+  body = JSON.parse(response.body)
+  expect(body["pets"].length).to eq(2)
+  expect(body["meta"]["total_registros"]).to eq(2)
+end
 
     it "retorna 401 sem autenticação" do
       get "/api/v1/pets", as: :json
@@ -92,9 +94,9 @@ RSpec.describe "Api::V1::Pets", type: :request do
     it "cria pet vinculado ao tutor informado" do
       expect {
         post "/api/v1/pets",
-             params: params_validos,
-             headers: auth_headers(admin),
-             as: :json
+            params: params_validos,
+            headers: auth_headers(admin),
+            as: :json
       }.to change(Pet, :count).by(1)
 
       expect(response).to have_http_status(:created)
@@ -105,9 +107,9 @@ RSpec.describe "Api::V1::Pets", type: :request do
 
     it "retorna 422 sem tutor_id" do
       post "/api/v1/pets",
-           params: { pet: params_validos[:pet].except(:tutor_id) },
-           headers: auth_headers(admin),
-           as: :json
+          params: { pet: params_validos[:pet].except(:tutor_id) },
+          headers: auth_headers(admin),
+          as: :json
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(JSON.parse(response.body)).to have_key("errors")
@@ -115,9 +117,9 @@ RSpec.describe "Api::V1::Pets", type: :request do
 
     it "retorna 422 com dados inválidos" do
       post "/api/v1/pets",
-           params: { pet: { nome: "" } },
-           headers: auth_headers(admin),
-           as: :json
+          params: { pet: { nome: "" } },
+          headers: auth_headers(admin),
+          as: :json
 
       expect(response).to have_http_status(:unprocessable_content)
     end
