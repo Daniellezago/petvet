@@ -10,8 +10,8 @@ RSpec.describe "Api::V1::Receituarios", type: :request do
 
   def auth_headers(user)
     post "/api/v1/users/sign_in",
-         params: { user: { email: user.email, password: senha } },
-         as: :json
+        params: { user: { email: user.email, password: senha } },
+        as: :json
 
     { "Authorization" => response.headers["Authorization"] }
   end
@@ -21,12 +21,14 @@ RSpec.describe "Api::V1::Receituarios", type: :request do
       create_list(:receituario, 2, pet: pet, usuario: veterinario, crmv_responsavel: veterinario.crmv)
 
       get "/api/v1/receituarios",
-          headers: auth_headers(veterinario),
-          as: :json
+        headers: auth_headers(veterinario),
+        as: :json
 
-      expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body).length).to eq(2)
-    end
+  expect(response).to have_http_status(:ok)
+  body = JSON.parse(response.body)
+  expect(body["receituarios"].length).to eq(2)
+  expect(body["meta"]["total_registros"]).to eq(2)
+end
 
     it "retorna 401 sem autenticação" do
       get "/api/v1/receituarios", as: :json
@@ -73,9 +75,9 @@ RSpec.describe "Api::V1::Receituarios", type: :request do
     it "cria receituário vinculado ao veterinário autenticado, copiando o CRMV automaticamente" do
       expect {
         post "/api/v1/receituarios",
-             params: params_validos,
-             headers: auth_headers(veterinario),
-             as: :json
+            params: params_validos,
+            headers: auth_headers(veterinario),
+            as: :json
       }.to change(Receituario, :count).by(1)
 
       expect(response).to have_http_status(:created)
@@ -86,11 +88,11 @@ RSpec.describe "Api::V1::Receituarios", type: :request do
 
     it "IGNORA usuario_id e crmv_responsavel enviados no corpo da requisição (auditoria dupla)" do
       post "/api/v1/receituarios",
-           params: params_validos.deep_merge(
-             receituario: { usuario_id: outro_veterinario.id, crmv_responsavel: "CRMV-FORJADO-000" }
-           ),
-           headers: auth_headers(veterinario),
-           as: :json
+          params: params_validos.deep_merge(
+          receituario: { usuario_id: outro_veterinario.id, crmv_responsavel: "CRMV-FORJADO-000" }
+          ),
+          headers: auth_headers(veterinario),
+          as: :json
 
       expect(response).to have_http_status(:created)
       body = JSON.parse(response.body)
@@ -102,18 +104,18 @@ RSpec.describe "Api::V1::Receituarios", type: :request do
 
     it "retorna 403 se o usuário autenticado não for veterinário (não tem CRMV)" do
       post "/api/v1/receituarios",
-           params: params_validos,
-           headers: auth_headers(atendente),
-           as: :json
+          params: params_validos,
+          headers: auth_headers(atendente),
+          as: :json
 
       expect(response).to have_http_status(:forbidden)
     end
 
     it "retorna 422 sem pet_id" do
       post "/api/v1/receituarios",
-           params: { receituario: params_validos[:receituario].except(:pet_id) },
-           headers: auth_headers(veterinario),
-           as: :json
+          params: { receituario: params_validos[:receituario].except(:pet_id) },
+          headers: auth_headers(veterinario),
+          as: :json
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(JSON.parse(response.body)).to have_key("errors")
@@ -144,8 +146,8 @@ RSpec.describe "Api::V1::Receituarios", type: :request do
       receituario = create(:receituario, pet: pet, usuario: veterinario, crmv_responsavel: veterinario.crmv)
 
       delete "/api/v1/receituarios/#{receituario.id}",
-             headers: auth_headers(veterinario),
-             as: :json
+            headers: auth_headers(veterinario),
+            as: :json
 
       expect(response).to have_http_status(:not_found)
       expect(Receituario.exists?(receituario.id)).to be true

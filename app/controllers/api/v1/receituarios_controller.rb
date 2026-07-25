@@ -4,9 +4,16 @@ module Api
       before_action :set_receituario, only: [ :show, :update ]
 
       def index
-        receituarios = policy_scope(Receituario)
-        render json: receituarios
-      end
+        receituarios = policy_scope(Receituario).includes(:pet, :usuario).page(params[:page]).per(20)
+        render json: {
+          receituarios: receituarios,
+          meta: {
+            pagina_atual: receituarios.current_page,
+            total_paginas: receituarios.total_pages,
+            total_registros: receituarios.total_count
+    }
+  }
+end
 
       def show
         authorize @receituario
