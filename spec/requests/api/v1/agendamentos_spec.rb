@@ -9,8 +9,8 @@ RSpec.describe "Api::V1::Agendamentos", type: :request do
 
   def auth_headers(user)
     post "/api/v1/users/sign_in",
-         params: { user: { email: user.email, password: senha } },
-         as: :json
+        params: { user: { email: user.email, password: senha } },
+        as: :json
 
     { "Authorization" => response.headers["Authorization"] }
   end
@@ -20,12 +20,14 @@ RSpec.describe "Api::V1::Agendamentos", type: :request do
       create_list(:agendamento, 2, tutor: tutor, pet: pet, usuario: admin)
 
       get "/api/v1/agendamentos",
-          headers: auth_headers(admin),
-          as: :json
+        headers: auth_headers(admin),
+        as: :json
 
-      expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body).length).to eq(2)
-    end
+  expect(response).to have_http_status(:ok)
+  body = JSON.parse(response.body)
+  expect(body["agendamentos"].length).to eq(2)
+  expect(body["meta"]["total_registros"]).to eq(2)
+end
 
     it "retorna 401 sem autenticação" do
       get "/api/v1/agendamentos", as: :json
@@ -69,9 +71,9 @@ RSpec.describe "Api::V1::Agendamentos", type: :request do
     it "cria agendamento vinculado ao usuário autenticado" do
       expect {
         post "/api/v1/agendamentos",
-             params: params_validos,
-             headers: auth_headers(admin),
-             as: :json
+            params: params_validos,
+            headers: auth_headers(admin),
+            as: :json
       }.to change(Agendamento, :count).by(1)
 
       expect(response).to have_http_status(:created)
@@ -84,9 +86,9 @@ RSpec.describe "Api::V1::Agendamentos", type: :request do
       outro_usuario = create(:user, :veterinario)
 
       post "/api/v1/agendamentos",
-           params: params_validos.deep_merge(agendamento: { usuario_id: outro_usuario.id }),
-           headers: auth_headers(admin),
-           as: :json
+          params: params_validos.deep_merge(agendamento: { usuario_id: outro_usuario.id }),
+          headers: auth_headers(admin),
+          as: :json
 
       expect(response).to have_http_status(:created)
       body = JSON.parse(response.body)
@@ -98,9 +100,9 @@ RSpec.describe "Api::V1::Agendamentos", type: :request do
       pet_de_outro_tutor = create(:pet, tutor: outro_tutor)
 
       post "/api/v1/agendamentos",
-           params: params_validos.deep_merge(agendamento: { pet_id: pet_de_outro_tutor.id }),
-           headers: auth_headers(admin),
-           as: :json
+          params: params_validos.deep_merge(agendamento: { pet_id: pet_de_outro_tutor.id }),
+          headers: auth_headers(admin),
+          as: :json
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(JSON.parse(response.body)["errors"]).to include("Pet deve pertencer ao tutor informado")
@@ -133,8 +135,8 @@ RSpec.describe "Api::V1::Agendamentos", type: :request do
 
         expect {
           delete "/api/v1/agendamentos/#{agendamento.id}",
-                 headers: auth_headers(admin),
-                 as: :json
+                headers: auth_headers(admin),
+                as: :json
         }.to change(Agendamento, :count).by(-1)
 
         expect(response).to have_http_status(:no_content)
@@ -147,8 +149,8 @@ RSpec.describe "Api::V1::Agendamentos", type: :request do
 
         expect {
           delete "/api/v1/agendamentos/#{agendamento.id}",
-                 headers: auth_headers(atendente),
-                 as: :json
+                headers: auth_headers(atendente),
+                as: :json
         }.not_to change(Agendamento, :count)
 
         expect(response).to have_http_status(:forbidden)

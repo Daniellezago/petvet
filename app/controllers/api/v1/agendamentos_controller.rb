@@ -4,9 +4,16 @@ module Api
       before_action :set_agendamento, only: [ :show, :update, :destroy ]
 
       def index
-        agendamentos = policy_scope(Agendamento).includes(:tutor, :pet, :usuario)
-        render json: agendamentos
-      end
+        agendamentos = policy_scope(Agendamento).includes(:tutor, :pet, :usuario).page(params[:page]).per(20)
+        render json: {
+          agendamentos: agendamentos,
+          meta: {
+            pagina_atual: agendamentos.current_page,
+            total_paginas: agendamentos.total_pages,
+            total_registros: agendamentos.total_count
+    }
+  }
+end
 
       def show
         authorize @agendamento
