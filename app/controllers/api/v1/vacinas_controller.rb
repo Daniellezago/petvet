@@ -4,8 +4,15 @@ module Api
       before_action :set_vacina, only: [ :show, :update ]
 
       def index
-        vacinas = policy_scope(Vacina).includes(:pet, :usuario)
-        render json: vacinas
+        vacinas = policy_scope(Vacina).includes(:pet, :usuario).page(params[:page]).per(20)
+        render json: {
+          vacinas: vacinas,
+          meta: {
+            pagina_atual: vacinas.current_page,
+            total_paginas: vacinas.total_pages,
+            total_registros: vacinas.total_count
+    }
+  }
 end
 
       def show
