@@ -9,8 +9,8 @@ RSpec.describe "Api::V1::Contratos", type: :request do
 
   def auth_headers(user)
     post "/api/v1/users/sign_in",
-         params: { user: { email: user.email, password: senha } },
-         as: :json
+        params: { user: { email: user.email, password: senha } },
+        as: :json
 
     { "Authorization" => response.headers["Authorization"] }
   end
@@ -20,12 +20,14 @@ RSpec.describe "Api::V1::Contratos", type: :request do
       create_list(:contrato, 2, tutor: tutor, pet: pet)
 
       get "/api/v1/contratos",
-          headers: auth_headers(admin),
-          as: :json
+        headers: auth_headers(admin),
+        as: :json
 
-      expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body).length).to eq(2)
-    end
+  expect(response).to have_http_status(:ok)
+  body = JSON.parse(response.body)
+  expect(body["contratos"].length).to eq(2)
+  expect(body["meta"]["total_registros"]).to eq(2)
+end
 
     it "retorna 401 sem autenticação" do
       get "/api/v1/contratos", as: :json
@@ -83,9 +85,9 @@ RSpec.describe "Api::V1::Contratos", type: :request do
     it "cria contrato particular sem exigir campos de convênio" do
       expect {
         post "/api/v1/contratos",
-             params: params_particular,
-             headers: auth_headers(admin),
-             as: :json
+            params: params_particular,
+            headers: auth_headers(admin),
+            as: :json
       }.to change(Contrato, :count).by(1)
 
       expect(response).to have_http_status(:created)
@@ -93,9 +95,9 @@ RSpec.describe "Api::V1::Contratos", type: :request do
 
     it "cria contrato de convênio com carteirinha e percentual de cobertura" do
       post "/api/v1/contratos",
-           params: params_convenio,
-           headers: auth_headers(admin),
-           as: :json
+          params: params_convenio,
+          headers: auth_headers(admin),
+          as: :json
 
       expect(response).to have_http_status(:created)
       body = JSON.parse(response.body)
@@ -105,9 +107,9 @@ RSpec.describe "Api::V1::Contratos", type: :request do
 
     it "retorna 422 se convênio não tiver numero_carteirinha" do
       post "/api/v1/contratos",
-           params: params_convenio.deep_merge(contrato: { numero_carteirinha: "" }),
-           headers: auth_headers(admin),
-           as: :json
+          params: params_convenio.deep_merge(contrato: { numero_carteirinha: "" }),
+          headers: auth_headers(admin),
+          as: :json
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(JSON.parse(response.body)["errors"]).to include("Numero carteirinha é obrigatório para contratos de convênio")
@@ -118,9 +120,9 @@ RSpec.describe "Api::V1::Contratos", type: :request do
       pet_de_outro_tutor = create(:pet, tutor: outro_tutor)
 
       post "/api/v1/contratos",
-           params: params_particular.deep_merge(contrato: { pet_id: pet_de_outro_tutor.id }),
-           headers: auth_headers(admin),
-           as: :json
+          params: params_particular.deep_merge(contrato: { pet_id: pet_de_outro_tutor.id }),
+          headers: auth_headers(admin),
+          as: :json
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(JSON.parse(response.body)["errors"]).to include("Pet deve pertencer ao tutor informado")
@@ -153,8 +155,8 @@ RSpec.describe "Api::V1::Contratos", type: :request do
 
         expect {
           delete "/api/v1/contratos/#{contrato.id}",
-                 headers: auth_headers(admin),
-                 as: :json
+                headers: auth_headers(admin),
+                as: :json
         }.to change(Contrato, :count).by(-1)
 
         expect(response).to have_http_status(:no_content)
@@ -167,8 +169,8 @@ RSpec.describe "Api::V1::Contratos", type: :request do
 
         expect {
           delete "/api/v1/contratos/#{contrato.id}",
-                 headers: auth_headers(atendente),
-                 as: :json
+                headers: auth_headers(atendente),
+                as: :json
         }.not_to change(Contrato, :count)
 
         expect(response).to have_http_status(:forbidden)
@@ -185,14 +187,14 @@ RSpec.describe "Api::V1::Contratos", type: :request do
       create(:contrato, :convenio, tutor: tutor, pet: luna, numero_carteirinha: "CARD-LUNA")
 
       get "/api/v1/contratos",
-          headers: auth_headers(admin),
-          as: :json
+        headers: auth_headers(admin),
+        as: :json
 
-      expect(response).to have_http_status(:ok)
-      body = JSON.parse(response.body)
-      carteirinhas = body.map { |c| c["numero_carteirinha"] }
+expect(response).to have_http_status(:ok)
+body = JSON.parse(response.body)
+carteirinhas = body["contratos"].map { |c| c["numero_carteirinha"] }
 
-      expect(carteirinhas).to contain_exactly("CARD-MIA", "CARD-LUNA")
+expect(carteirinhas).to contain_exactly("CARD-MIA", "CARD-LUNA")
     end
   end
 end

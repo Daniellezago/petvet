@@ -4,9 +4,16 @@ module Api
       before_action :set_contrato, only: [ :show, :update, :destroy ]
 
       def index
-        contratos = policy_scope(Contrato).includes(:tutor, :pet)
-        render json: contratos
-      end
+        contratos = policy_scope(Contrato).includes(:tutor, :pet).page(params[:page]).per(20)
+        render json: {
+          contratos: contratos,
+          meta: {
+            pagina_atual: contratos.current_page,
+            total_paginas: contratos.total_pages,
+            total_registros: contratos.total_count
+    }
+  }
+end
 
       def show
         authorize @contrato
