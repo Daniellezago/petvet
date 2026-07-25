@@ -8,8 +8,8 @@ RSpec.describe "Api::V1::Tutores", type: :request do
 
   def auth_headers(user)
     post "/api/v1/users/sign_in",
-         params: { user: { email: user.email, password: senha } },
-         as: :json
+        params: { user: { email: user.email, password: senha } },
+        as: :json
 
     { "Authorization" => response.headers["Authorization"] }
   end
@@ -21,9 +21,11 @@ RSpec.describe "Api::V1::Tutores", type: :request do
           headers: auth_headers(admin),
           as: :json
 
-      expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body).length).to eq(1)
-    end
+  expect(response).to have_http_status(:ok)
+  body = JSON.parse(response.body)
+  expect(body["tutores"].length).to eq(1)
+  expect(body["meta"]["total_registros"]).to eq(1)
+end
 
     it "retorna 401 sem autenticação" do
       get "/api/v1/tutores", as: :json
@@ -46,9 +48,9 @@ RSpec.describe "Api::V1::Tutores", type: :request do
 
   it "cria tutor com dados válidos" do
     post "/api/v1/tutores",
-         params: params,
-         headers: auth_headers(admin),
-         as: :json
+        params: params,
+        headers: auth_headers(admin),
+        as: :json
 
     expect(response).to have_http_status(:created)
     expect(JSON.parse(response.body)["nome"]).to eq("João Silva")
@@ -56,9 +58,9 @@ RSpec.describe "Api::V1::Tutores", type: :request do
 
   it "retorna erros com dados inválidos" do
     post "/api/v1/tutores",
-         params: { tutor: { nome: "" } },
-         headers: auth_headers(admin),
-         as: :json
+        params: { tutor: { nome: "" } },
+        headers: auth_headers(admin),
+        as: :json
 
     expect(response).to have_http_status(:unprocessable_content)
     expect(JSON.parse(response.body)).to have_key("errors")
@@ -70,9 +72,9 @@ RSpec.describe "Api::V1::Tutores", type: :request do
 
     expect {
       post "/api/v1/tutores",
-           params: params,
-           headers: auth_headers(admin),
-           as: :json
+          params: params,
+          headers: auth_headers(admin),
+          as: :json
     }.to change(Tutor, :count).by(1)
 
     expect(response).to have_http_status(:created)
@@ -82,9 +84,9 @@ RSpec.describe "Api::V1::Tutores", type: :request do
     create(:tutor, cpf: params[:tutor][:cpf], email: params[:tutor][:email])
 
     post "/api/v1/tutores",
-         params: params,
-         headers: auth_headers(admin),
-         as: :json
+        params: params,
+        headers: auth_headers(admin),
+        as: :json
 
     expect(response).to have_http_status(:unprocessable_content)
   end
@@ -143,8 +145,8 @@ end
 
         expect {
           delete "/api/v1/tutores/#{tutor_existente.id}",
-                 headers: auth_headers(admin),
-                 as: :json
+                headers: auth_headers(admin),
+                as: :json
         }.not_to change(Tutor.unscoped, :count)
 
         expect(response).to have_http_status(:no_content)
@@ -157,8 +159,8 @@ end
         tutor_existente = create(:tutor, ativo: true)
 
         delete "/api/v1/tutores/#{tutor_existente.id}",
-               headers: auth_headers(atendente),
-               as: :json
+              headers: auth_headers(atendente),
+              as: :json
 
         expect(response).to have_http_status(:forbidden)
         expect(tutor_existente.reload.ativo).to be true
@@ -178,8 +180,8 @@ end
 
     it "retorna 404 se o tutor não existir" do
       delete "/api/v1/tutores/999999",
-             headers: auth_headers(admin),
-             as: :json
+            headers: auth_headers(admin),
+            as: :json
 
       expect(response).to have_http_status(:not_found)
     end

@@ -4,9 +4,16 @@ module Api
       before_action :set_tutor, only: [ :show, :update, :destroy ]
 
       def index
-        tutores = policy_scope(Tutor)
-        render json: tutores
-      end
+        tutores = policy_scope(Tutor).page(params[:page]).per(20)
+        render json: {
+          tutores: tutores,
+          meta: {
+            pagina_atual: tutores.current_page,
+            total_paginas: tutores.total_pages,
+            total_registros: tutores.total_count
+    }
+  }
+end
 
       def show
         authorize @tutor
