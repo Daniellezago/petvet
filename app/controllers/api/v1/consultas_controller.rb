@@ -4,8 +4,15 @@ module Api
       before_action :set_consulta, only: [ :show, :update ]
 
       def index
-  consultas = policy_scope(Consulta).includes(:pet, :usuario)
-  render json: consultas
+        consultas = policy_scope(Consulta).includes(:pet, :usuario).page(params[:page]).per(20)
+        render json: {
+          consultas: consultas,
+          meta: {
+            pagina_atual: consultas.current_page,
+            total_paginas: consultas.total_pages,
+            total_registros: consultas.total_count
+    }
+  }
 end
 
       def show

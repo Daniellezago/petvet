@@ -9,8 +9,8 @@ RSpec.describe "Api::V1::Consultas", type: :request do
 
   def auth_headers(user)
     post "/api/v1/users/sign_in",
-         params: { user: { email: user.email, password: senha } },
-         as: :json
+        params: { user: { email: user.email, password: senha } },
+        as: :json
 
     { "Authorization" => response.headers["Authorization"] }
   end
@@ -19,13 +19,15 @@ RSpec.describe "Api::V1::Consultas", type: :request do
     it "retorna lista de consultas para usuário autenticado" do
       create_list(:consulta, 2, pet: pet, usuario: admin)
 
-      get "/api/v1/consultas",
-          headers: auth_headers(admin),
-          as: :json
+  get "/api/v1/consultas",
+      headers: auth_headers(admin),
+      as: :json
 
-      expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body).length).to eq(2)
-    end
+  expect(response).to have_http_status(:ok)
+  body = JSON.parse(response.body)
+  expect(body["consultas"].length).to eq(2)
+  expect(body["meta"]["total_registros"]).to eq(2)
+end
 
     it "retorna 401 sem autenticação" do
       get "/api/v1/consultas", as: :json
@@ -71,9 +73,9 @@ RSpec.describe "Api::V1::Consultas", type: :request do
     it "cria consulta vinculada ao usuário autenticado" do
       expect {
         post "/api/v1/consultas",
-             params: params_validos,
-             headers: auth_headers(admin),
-             as: :json
+            params: params_validos,
+            headers: auth_headers(admin),
+            as: :json
       }.to change(Consulta, :count).by(1)
 
       expect(response).to have_http_status(:created)
@@ -83,9 +85,9 @@ RSpec.describe "Api::V1::Consultas", type: :request do
 
     it "IGNORA usuario_id enviado no corpo da requisição e usa o usuário autenticado (auditoria)" do
       post "/api/v1/consultas",
-           params: params_validos.deep_merge(consulta: { usuario_id: outro_usuario.id }),
-           headers: auth_headers(admin),
-           as: :json
+          params: params_validos.deep_merge(consulta: { usuario_id: outro_usuario.id }),
+          headers: auth_headers(admin),
+          as: :json
 
       expect(response).to have_http_status(:created)
       body = JSON.parse(response.body)
@@ -97,9 +99,9 @@ RSpec.describe "Api::V1::Consultas", type: :request do
 
     it "retorna 422 sem pet_id" do
       post "/api/v1/consultas",
-           params: { consulta: params_validos[:consulta].except(:pet_id) },
-           headers: auth_headers(admin),
-           as: :json
+          params: { consulta: params_validos[:consulta].except(:pet_id) },
+          headers: auth_headers(admin),
+          as: :json
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(JSON.parse(response.body)).to have_key("errors")
@@ -107,9 +109,9 @@ RSpec.describe "Api::V1::Consultas", type: :request do
 
     it "retorna 422 com data futura" do
       post "/api/v1/consultas",
-           params: params_validos.deep_merge(consulta: { data: 1.day.from_now }),
-           headers: auth_headers(admin),
-           as: :json
+          params: params_validos.deep_merge(consulta: { data: 1.day.from_now }),
+          headers: auth_headers(admin),
+          as: :json
 
       expect(response).to have_http_status(:unprocessable_content)
     end
@@ -139,8 +141,8 @@ RSpec.describe "Api::V1::Consultas", type: :request do
       consulta = create(:consulta, pet: pet, usuario: admin)
 
       delete "/api/v1/consultas/#{consulta.id}",
-             headers: auth_headers(admin),
-             as: :json
+            headers: auth_headers(admin),
+            as: :json
 
       expect(response).to have_http_status(:not_found)
       expect(Consulta.exists?(consulta.id)).to be true
