@@ -4,8 +4,15 @@ module Api
       before_action :set_exame, only: [ :show, :update ]
 
       def index
-      exames = policy_scope(Exame).includes(:pet, :usuario)
-      render json: exames
+        exames = policy_scope(Exame).includes(:pet, :usuario).page(params[:page]).per(20)
+        render json: {
+          exames: exames,
+          meta: {
+            pagina_atual: exames.current_page,
+            total_paginas: exames.total_pages,
+            total_registros: exames.total_count
+    }
+  }
 end
 
       def show

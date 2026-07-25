@@ -17,15 +17,17 @@ RSpec.describe "Api::V1::Exames", type: :request do
 
   describe "GET /api/v1/exames" do
     it "retorna lista de exames para usuário autenticado" do
-      create_list(:exame, 2, pet: pet, usuario: admin)
+  create_list(:exame, 2, pet: pet, usuario: admin)
 
-      get "/api/v1/exames",
-          headers: auth_headers(admin),
-          as: :json
+  get "/api/v1/exames",
+      headers: auth_headers(admin),
+      as: :json
 
-      expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body).length).to eq(2)
-    end
+  expect(response).to have_http_status(:ok)
+  body = JSON.parse(response.body)
+  expect(body["exames"].length).to eq(2)
+  expect(body["meta"]["total_registros"]).to eq(2)
+end
 
     it "retorna 401 sem autenticação" do
       get "/api/v1/exames", as: :json
@@ -161,8 +163,8 @@ RSpec.describe "Api::V1::Exames", type: :request do
       exame = create(:exame, pet: pet, usuario: admin)
 
       delete "/api/v1/exames/#{exame.id}",
-             headers: auth_headers(admin),
-             as: :json
+            headers: auth_headers(admin),
+            as: :json
 
       expect(response).to have_http_status(:not_found)
       expect(Exame.exists?(exame.id)).to be true
