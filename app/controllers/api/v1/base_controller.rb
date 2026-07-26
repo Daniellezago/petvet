@@ -5,11 +5,11 @@ module Api
       before_action :authenticate_user!
 
       rescue_from Pundit::NotAuthorizedError do
-        render json: { error: "Não autorizado" }, status: :forbidden
+        render json: { errors: [ "Não autorizado" ] }, status: :forbidden
       end
 
       rescue_from ActiveRecord::RecordNotFound do
-        render json: { error: "Registro não encontrado" }, status: :not_found
+        render json: { errors: [ "Registro não encontrado" ] }, status: :not_found
       end
     end
   end
