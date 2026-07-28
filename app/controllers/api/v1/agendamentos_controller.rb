@@ -11,9 +11,9 @@ module Api
             pagina_atual: agendamentos.current_page,
             total_paginas: agendamentos.total_pages,
             total_registros: agendamentos.total_count
-    }
-  }
-end
+          }
+        }
+      end
 
       def show
         authorize @agendamento
@@ -56,7 +56,7 @@ end
 
       # usuario_id NÃO está na lista — é sempre definido pelo controller
       def agendamento_params
-        params.require(:agendamento).permit(:data_hora, :status, :observacoes, :tutor_id, :pet_id)
+        params.require(:agendamento).permit(:data_hora, :status, :tipo_agendamento, :observacoes, :tutor_id, :pet_id)
       end
     end
   end
