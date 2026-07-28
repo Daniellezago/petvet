@@ -1,0 +1,1095 @@
+---
+openapi: 3.0.1
+info:
+  title: PetVet API
+  version: v1
+  description: 'API REST para gestão de clínica veterinária: tutores, pets, histórico
+    médico (consultas, vacinas, exames, receituários), agendamentos e contratos/convênios.'
+paths:
+  "/api/v1/agendamentos":
+    get:
+      summary: Lista os agendamentos
+      tags:
+      - Agendamentos
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: lista retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  agendamentos:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        data_hora:
+                          type: string
+                          format: date-time
+                        status:
+                          type: string
+                          enum:
+                          - agendado
+                          - confirmado
+                          - realizado
+                          - cancelado
+                        observacoes:
+                          type: string
+                          nullable: true
+                        tutor_id:
+                          type: integer
+                        pet_id:
+                          type: integer
+                        usuario_id:
+                          type: integer
+                  meta:
+                    type: object
+                    properties:
+                      pagina_atual:
+                        type: integer
+                      total_paginas:
+                        type: integer
+                      total_registros:
+                        type: integer
+        '401':
+          description: não autenticado
+    post:
+      summary: Cria um novo agendamento
+      tags:
+      - Agendamentos
+      security:
+      - bearer_auth: []
+      description: O pet informado deve pertencer ao tutor informado, senão retorna
+        422.
+      parameters: []
+      responses:
+        '201':
+          description: agendamento criado com sucesso
+        '422':
+          description: dados inválidos ou pet não pertence ao tutor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                agendamento:
+                  type: object
+                  properties:
+                    data_hora:
+                      type: string
+                      format: date-time
+                    observacoes:
+                      type: string
+                    tutor_id:
+                      type: integer
+                    pet_id:
+                      type: integer
+                  required:
+                  - data_hora
+                  - tutor_id
+                  - pet_id
+  "/api/v1/agendamentos/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Exibe um agendamento específico
+      tags:
+      - Agendamentos
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: agendamento encontrado
+        '404':
+          description: agendamento não encontrado
+    patch:
+      summary: Atualiza um agendamento
+      tags:
+      - Agendamentos
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: agendamento atualizado com sucesso
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                agendamento:
+                  type: object
+                  properties:
+                    status:
+                      type: string
+                      enum:
+                      - agendado
+                      - confirmado
+                      - realizado
+                      - cancelado
+    delete:
+      summary: Remove um agendamento
+      tags:
+      - Agendamentos
+      security:
+      - bearer_auth: []
+      description: Restrito a administradores (403 para outros papéis).
+      responses:
+        '204':
+          description: agendamento removido com sucesso
+  "/api/v1/consultas":
+    get:
+      summary: Lista as consultas
+      tags:
+      - Consultas
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: lista retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  consultas:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        data:
+                          type: string
+                          format: date-time
+                        descricao:
+                          type: string
+                        diagnostico:
+                          type: string
+                          nullable: true
+                        tratamento:
+                          type: string
+                          nullable: true
+                        observacoes:
+                          type: string
+                          nullable: true
+                        pet_id:
+                          type: integer
+                        usuario_id:
+                          type: integer
+                  meta:
+                    type: object
+                    properties:
+                      pagina_atual:
+                        type: integer
+                      total_paginas:
+                        type: integer
+                      total_registros:
+                        type: integer
+        '401':
+          description: não autenticado
+    post:
+      summary: Cria uma nova consulta
+      tags:
+      - Consultas
+      security:
+      - bearer_auth: []
+      description: usuario_id é sempre o usuário autenticado — nunca aceito via parâmetro,
+        mesmo se enviado.
+      parameters: []
+      responses:
+        '201':
+          description: consulta criada com sucesso
+        '422':
+          description: dados inválidos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                consulta:
+                  type: object
+                  properties:
+                    data:
+                      type: string
+                      format: date-time
+                    descricao:
+                      type: string
+                    diagnostico:
+                      type: string
+                    tratamento:
+                      type: string
+                    observacoes:
+                      type: string
+                    pet_id:
+                      type: integer
+                  required:
+                  - data
+                  - descricao
+                  - pet_id
+  "/api/v1/consultas/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Exibe uma consulta específica
+      tags:
+      - Consultas
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: consulta encontrada
+        '404':
+          description: consulta não encontrada
+    patch:
+      summary: Atualiza uma consulta
+      tags:
+      - Consultas
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: consulta atualizada com sucesso
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                consulta:
+                  type: object
+                  properties:
+                    descricao:
+                      type: string
+                    tratamento:
+                      type: string
+  "/api/v1/contratos":
+    get:
+      summary: Lista os contratos
+      tags:
+      - Contratos
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: lista retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  contratos:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        tipo_contrato:
+                          type: string
+                          enum:
+                          - particular
+                          - convenio
+                        nome_convenio:
+                          type: string
+                          nullable: true
+                        numero_carteirinha:
+                          type: string
+                          nullable: true
+                        percentual_cobertura:
+                          type: number
+                          nullable: true
+                        data_inicio:
+                          type: string
+                          format: date
+                        data_fim:
+                          type: string
+                          format: date
+                          nullable: true
+                        tutor_id:
+                          type: integer
+                        pet_id:
+                          type: integer
+                  meta:
+                    type: object
+                    properties:
+                      pagina_atual:
+                        type: integer
+                      total_paginas:
+                        type: integer
+                      total_registros:
+                        type: integer
+        '401':
+          description: não autenticado
+    post:
+      summary: Cria um novo contrato
+      tags:
+      - Contratos
+      security:
+      - bearer_auth: []
+      description: Se tipo_contrato for 'convenio', nome_convenio, numero_carteirinha
+        e percentual_cobertura são obrigatórios. O pet deve pertencer ao tutor informado.
+      parameters: []
+      responses:
+        '201':
+          description: contrato criado com sucesso
+        '422':
+          description: dados inválidos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contrato:
+                  type: object
+                  properties:
+                    tipo_contrato:
+                      type: string
+                      enum:
+                      - particular
+                      - convenio
+                    nome_convenio:
+                      type: string
+                    numero_carteirinha:
+                      type: string
+                    percentual_cobertura:
+                      type: number
+                    data_inicio:
+                      type: string
+                      format: date
+                    data_fim:
+                      type: string
+                      format: date
+                    tutor_id:
+                      type: integer
+                    pet_id:
+                      type: integer
+                  required:
+                  - data_inicio
+                  - tutor_id
+                  - pet_id
+  "/api/v1/contratos/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Exibe um contrato específico
+      tags:
+      - Contratos
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: contrato encontrado
+        '404':
+          description: contrato não encontrado
+    patch:
+      summary: Atualiza um contrato
+      tags:
+      - Contratos
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: contrato atualizado com sucesso
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contrato:
+                  type: object
+                  properties:
+                    percentual_cobertura:
+                      type: number
+    delete:
+      summary: Remove um contrato
+      tags:
+      - Contratos
+      security:
+      - bearer_auth: []
+      description: Restrito a administradores (403 para outros papéis).
+      responses:
+        '204':
+          description: contrato removido com sucesso
+  "/api/v1/exames":
+    get:
+      summary: Lista os exames
+      tags:
+      - Exames
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: lista retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exames:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        tipo_exame:
+                          type: string
+                        data:
+                          type: string
+                          format: date
+                        resultado:
+                          type: string
+                          nullable: true
+                        observacoes:
+                          type: string
+                          nullable: true
+                        pet_id:
+                          type: integer
+                        usuario_id:
+                          type: integer
+                  meta:
+                    type: object
+                    properties:
+                      pagina_atual:
+                        type: integer
+                      total_paginas:
+                        type: integer
+                      total_registros:
+                        type: integer
+        '401':
+          description: não autenticado
+    post:
+      summary: Cria um novo exame
+      tags:
+      - Exames
+      security:
+      - bearer_auth: []
+      description: Aceita upload opcional de arquivo (PDF, JPEG ou PNG) via campo
+        'arquivo'. usuario_id é sempre o usuário autenticado — nunca aceito via parâmetro.
+      parameters: []
+      responses:
+        '201':
+          description: exame criado com sucesso
+        '422':
+          description: dados inválidos
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: string
+        required: true
+  "/api/v1/exames/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Exibe um exame específico
+      tags:
+      - Exames
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: exame encontrado
+        '404':
+          description: exame não encontrado
+    patch:
+      summary: Atualiza um exame
+      tags:
+      - Exames
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: exame atualizado com sucesso
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                exame:
+                  type: object
+                  properties:
+                    resultado:
+                      type: string
+  "/api/v1/pets":
+    get:
+      summary: Lista os pets
+      tags:
+      - Pets
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: lista retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pets:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        nome:
+                          type: string
+                        especie:
+                          type: string
+                        raca:
+                          type: string
+                          nullable: true
+                        sexo:
+                          type: string
+                        data_nascimento:
+                          type: string
+                          format: date
+                          nullable: true
+                        peso_atual:
+                          type: number
+                          nullable: true
+                        tutor_id:
+                          type: integer
+                  meta:
+                    type: object
+                    properties:
+                      pagina_atual:
+                        type: integer
+                      total_paginas:
+                        type: integer
+                      total_registros:
+                        type: integer
+        '401':
+          description: não autenticado
+    post:
+      summary: Cria um novo pet
+      tags:
+      - Pets
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '201':
+          description: pet criado com sucesso
+        '422':
+          description: dados inválidos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pet:
+                  type: object
+                  properties:
+                    nome:
+                      type: string
+                    especie:
+                      type: string
+                    raca:
+                      type: string
+                    sexo:
+                      type: string
+                      enum:
+                      - macho
+                      - femea
+                    data_nascimento:
+                      type: string
+                      format: date
+                    peso_atual:
+                      type: number
+                    tutor_id:
+                      type: integer
+                  required:
+                  - nome
+                  - especie
+                  - sexo
+                  - tutor_id
+  "/api/v1/pets/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Exibe um pet específico
+      tags:
+      - Pets
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: pet encontrado
+        '404':
+          description: pet não encontrado
+    patch:
+      summary: Atualiza um pet
+      tags:
+      - Pets
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: pet atualizado com sucesso
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pet:
+                  type: object
+                  properties:
+                    nome:
+                      type: string
+                    peso_atual:
+                      type: number
+  "/api/v1/receituarios":
+    get:
+      summary: Lista os receituários
+      tags:
+      - Receituários
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: lista retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  receituarios:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        tipo_receituario:
+                          type: string
+                          enum:
+                          - simples
+                          - controle_especial
+                        medicamento:
+                          type: string
+                        posologia:
+                          type: string
+                        duracao_tratamento:
+                          type: string
+                          nullable: true
+                        crmv_responsavel:
+                          type: string
+                        data_emissao:
+                          type: string
+                          format: date
+                        pet_id:
+                          type: integer
+                        usuario_id:
+                          type: integer
+                  meta:
+                    type: object
+                    properties:
+                      pagina_atual:
+                        type: integer
+                      total_paginas:
+                        type: integer
+                      total_registros:
+                        type: integer
+        '401':
+          description: não autenticado
+    post:
+      summary: Cria um novo receituário
+      tags:
+      - Receituários
+      security:
+      - bearer_auth: []
+      description: Requer usuário com CRMV cadastrado (403 caso contrário). usuario_id
+        e crmv_responsavel são sempre derivados do usuário autenticado — nunca aceitos
+        via parâmetro, mesmo se enviados.
+      parameters: []
+      responses:
+        '201':
+          description: receituário criado com sucesso
+        '422':
+          description: dados inválidos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                receituario:
+                  type: object
+                  properties:
+                    tipo_receituario:
+                      type: string
+                      enum:
+                      - simples
+                      - controle_especial
+                    medicamento:
+                      type: string
+                    posologia:
+                      type: string
+                    duracao_tratamento:
+                      type: string
+                    observacoes:
+                      type: string
+                    data_emissao:
+                      type: string
+                      format: date
+                    pet_id:
+                      type: integer
+                  required:
+                  - medicamento
+                  - posologia
+                  - data_emissao
+                  - pet_id
+  "/api/v1/receituarios/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Exibe um receituário específico
+      tags:
+      - Receituários
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: receituário encontrado
+        '404':
+          description: receituário não encontrado
+    patch:
+      summary: Atualiza um receituário
+      tags:
+      - Receituários
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: receituário atualizado com sucesso
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                receituario:
+                  type: object
+                  properties:
+                    observacoes:
+                      type: string
+  "/api/v1/tutores":
+    get:
+      summary: Lista os tutores
+      tags:
+      - Tutores
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: page
+        in: query
+        required: false
+        description: 'Número da página (padrão: 1)'
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: lista retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tutores:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        nome:
+                          type: string
+                        email:
+                          type: string
+                        cpf:
+                          type: string
+                        telefone:
+                          type: string
+                        ativo:
+                          type: boolean
+                  meta:
+                    type: object
+                    properties:
+                      pagina_atual:
+                        type: integer
+                      total_paginas:
+                        type: integer
+                      total_registros:
+                        type: integer
+        '401':
+          description: não autenticado
+    post:
+      summary: Cria um novo tutor
+      tags:
+      - Tutores
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '201':
+          description: tutor criado com sucesso
+        '422':
+          description: dados inválidos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tutor:
+                  type: object
+                  properties:
+                    nome:
+                      type: string
+                    email:
+                      type: string
+                    telefone:
+                      type: string
+                    cpf:
+                      type: string
+                    endereco:
+                      type: string
+                  required:
+                  - nome
+                  - email
+                  - telefone
+                  - cpf
+  "/api/v1/vacinas":
+    get:
+      summary: Lista as vacinas
+      tags:
+      - Vacinas
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: lista retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  vacinas:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        nome:
+                          type: string
+                        data_aplicacao:
+                          type: string
+                          format: date
+                        proxima_dose:
+                          type: string
+                          format: date
+                          nullable: true
+                        lote:
+                          type: string
+                          nullable: true
+                        fabricante:
+                          type: string
+                          nullable: true
+                        observacoes:
+                          type: string
+                          nullable: true
+                        pet_id:
+                          type: integer
+                        usuario_id:
+                          type: integer
+                  meta:
+                    type: object
+                    properties:
+                      pagina_atual:
+                        type: integer
+                      total_paginas:
+                        type: integer
+                      total_registros:
+                        type: integer
+        '401':
+          description: não autenticado
+    post:
+      summary: Cria uma nova vacina
+      tags:
+      - Vacinas
+      security:
+      - bearer_auth: []
+      description: usuario_id é sempre o usuário autenticado — nunca aceito via parâmetro.
+      parameters: []
+      responses:
+        '201':
+          description: vacina criada com sucesso
+        '422':
+          description: dados inválidos
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vacina:
+                  type: object
+                  properties:
+                    nome:
+                      type: string
+                    data_aplicacao:
+                      type: string
+                      format: date
+                    proxima_dose:
+                      type: string
+                      format: date
+                    lote:
+                      type: string
+                    fabricante:
+                      type: string
+                    observacoes:
+                      type: string
+                    pet_id:
+                      type: integer
+                  required:
+                  - nome
+                  - data_aplicacao
+                  - pet_id
+  "/api/v1/vacinas/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Exibe uma vacina específica
+      tags:
+      - Vacinas
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: vacina encontrada
+        '404':
+          description: vacina não encontrada
+    patch:
+      summary: Atualiza uma vacina
+      tags:
+      - Vacinas
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: vacina atualizada com sucesso
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vacina:
+                  type: object
+                  properties:
+                    lote:
+                      type: string
+servers:
+- url: http://{defaultHost}
+  variables:
+    defaultHost:
+      default: localhost:3000
+components:
+  securitySchemes:
+    bearer_auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
