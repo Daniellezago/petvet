@@ -4,6 +4,7 @@ class Agendamento < ApplicationRecord
   belongs_to :usuario, class_name: "User"
 
   enum :status, { agendado: 0, confirmado: 1, realizado: 2, cancelado: 3 }, default: :agendado
+  enum :tipo_agendamento, { consulta: 0, exame: 1, cirurgia: 2, banho: 3, tosa: 4 }, default: :consulta
 
   validates :data_hora, presence: true
 

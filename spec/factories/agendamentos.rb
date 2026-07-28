@@ -2,6 +2,7 @@ FactoryBot.define do
   factory :agendamento do
     data_hora { 1.day.from_now.change(hour: 14, min: 0) }
     status { :agendado }
+    tipo_agendamento { :consulta }
     observacoes { "Consulta de rotina" }
     association :tutor
 

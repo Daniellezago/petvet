@@ -37,6 +37,33 @@ RSpec.describe Agendamento, type: :model do
       expect(agendamento.agendado?).to be true
     end
 
+  describe "enum tipo_agendamento" do
+  it "assume 'consulta' como padrão" do
+    agendamento = create(:agendamento)
+    expect(agendamento.consulta?).to be true
+  end
+
+  it "permite marcar como exame" do
+    agendamento = create(:agendamento, tipo_agendamento: :exame)
+    expect(agendamento.exame?).to be true
+  end
+
+  it "permite marcar como cirurgia" do
+    agendamento = create(:agendamento, tipo_agendamento: :cirurgia)
+    expect(agendamento.cirurgia?).to be true
+  end
+
+  it "permite marcar como banho" do
+    agendamento = create(:agendamento, tipo_agendamento: :banho)
+    expect(agendamento.banho?).to be true
+  end
+
+  it "permite marcar como tosa" do
+    agendamento = create(:agendamento, tipo_agendamento: :tosa)
+    expect(agendamento.tosa?).to be true
+  end
+end
+
     it "permite marcar como confirmado" do
       agendamento = create(:agendamento, :confirmado)
       expect(agendamento.confirmado?).to be true
