@@ -32,12 +32,23 @@ RSpec.describe Agendamento, type: :model do
   end
 
   describe "enum status" do
-    it "assume 'agendado' como padrão" do
-      agendamento = create(:agendamento)
-      expect(agendamento.agendado?).to be true
-    end
+  it "assume 'agendado' como padrão" do
+    agendamento = create(:agendamento)
+    expect(agendamento.agendado?).to be true
+  end
 
-  describe "enum tipo_agendamento" do
+  it "permite marcar como confirmado" do
+    agendamento = create(:agendamento, :confirmado)
+    expect(agendamento.confirmado?).to be true
+  end
+
+  it "permite marcar como cancelado" do
+    agendamento = create(:agendamento, :cancelado)
+    expect(agendamento.cancelado?).to be true
+  end
+end
+
+describe "enum tipo_agendamento" do
   it "assume 'consulta' como padrão" do
     agendamento = create(:agendamento)
     expect(agendamento.consulta?).to be true
@@ -63,17 +74,6 @@ RSpec.describe Agendamento, type: :model do
     expect(agendamento.tosa?).to be true
   end
 end
-
-    it "permite marcar como confirmado" do
-      agendamento = create(:agendamento, :confirmado)
-      expect(agendamento.confirmado?).to be true
-    end
-
-    it "permite marcar como cancelado" do
-      agendamento = create(:agendamento, :cancelado)
-      expect(agendamento.cancelado?).to be true
-    end
-  end
 
   describe "factory" do
     it "tem uma factory válida" do
