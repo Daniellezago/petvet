@@ -25,6 +25,7 @@ Rails.application.routes.draw do
   resources :vacinas
   resources :agendamentos
   resources :contratos
+  resources :exames
 
   # ================================
   # ROTAS API (JWT) — reaproveitam o scope :user do Devise
