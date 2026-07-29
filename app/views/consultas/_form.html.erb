@@ -1,0 +1,35 @@
+<%= form_with model: consulta, local: true, class: "space-y-4 bg-white rounded-xl shadow p-6 max-w-lg" do |f| %>
+  <% if consulta.errors.any? %>
+    <div class="bg-red-50 text-red-700 text-sm rounded p-3">
+      <ul class="list-disc list-inside"><% consulta.errors.full_messages.each do |m| %><li><%= m %></li><% end %></ul>
+    </div>
+  <% end %>
+  <div>
+    <%= f.label :pet_id, "Pet", class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <%= f.collection_select :pet_id, Pet.all, :id, :nome, {}, class: "w-full rounded border border-gray-300 p-2" %>
+  </div>
+  <div>
+    <%= f.label :data, class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <%= f.datetime_field :data, class: "w-full rounded border border-gray-300 p-2" %>
+  </div>
+  <div>
+    <%= f.label :descricao, class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <%= f.text_area :descricao, rows: 3, class: "w-full rounded border border-gray-300 p-2" %>
+  </div>
+  <div>
+    <%= f.label :diagnostico, class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <%= f.text_area :diagnostico, rows: 2, class: "w-full rounded border border-gray-300 p-2" %>
+  </div>
+  <div>
+    <%= f.label :tratamento, class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <%= f.text_area :tratamento, rows: 2, class: "w-full rounded border border-gray-300 p-2" %>
+  </div>
+  <div>
+    <%= f.label :observacoes, class: "block text-sm font-medium text-gray-700 mb-1" %>
+    <%= f.text_area :observacoes, rows: 2, class: "w-full rounded border border-gray-300 p-2" %>
+  </div>
+  <div class="flex gap-3">
+    <%= f.submit class: "bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded font-semibold transition cursor-pointer" %>
+    <%= link_to "Cancelar", consultas_path, class: "px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-50" %>
+  </div>
+<% end %>
