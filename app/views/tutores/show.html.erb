@@ -1,2 +1,14 @@
-<h1>Tutores#show</h1>
-<p>Find me in app/views/tutores/show.html.erb</p>
+<% content_for :title, @tutor.nome %>
+
+<div class="bg-white rounded-xl shadow p-6 max-w-lg space-y-3">
+  <h2 class="text-xl font-semibold text-gray-800"><%= @tutor.nome %></h2>
+  <p class="text-gray-600"><span class="font-medium">Email:</span> <%= @tutor.email %></p>
+  <p class="text-gray-600"><span class="font-medium">Telefone:</span> <%= @tutor.telefone %></p>
+  <p class="text-gray-600"><span class="font-medium">CPF:</span> <%= @tutor.cpf %></p>
+  <p class="text-gray-600"><span class="font-medium">Endereço:</span> <%= @tutor.endereco %></p>
+
+  <div class="flex gap-3 pt-4">
+    <%= link_to "Editar", edit_tutor_path(@tutor), class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition" %>
+    <%= link_to "Voltar", tutores_path, class: "px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-50" %>
+  </div>
+</div>

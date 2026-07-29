@@ -1,4 +1,7 @@
 class Tutor < ApplicationRecord
+  after_initialize { self.ativo = true if ativo.nil? }
+  self.table_name = "tutors"
+
   has_many :pets, dependent: :restrict_with_error
   has_many :agendamentos, dependent: :restrict_with_error
   has_many :contratos, dependent: :restrict_with_error

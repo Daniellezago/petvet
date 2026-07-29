@@ -14,5 +14,11 @@
   ActiveSupport::Inflector.inflections(:en) do |inflect|
     inflect.irregular "consulta", "consultas"
   end
+
+  ActiveSupport::Inflector.inflections(:en) do |inflect|
+  inflect.irregular "consulta", "consultas"
+  inflect.irregular "tutor", "tutores"
+end
+
 #   inflect.acronym "RESTful"
 # end

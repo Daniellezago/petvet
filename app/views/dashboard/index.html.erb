@@ -1,2 +1,19 @@
-<h1>Dashboard#index</h1>
-<p>Find me in app/views/dashboard/index.html.erb</p>
+<% content_for :title, "Dashboard" %>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+  <div class="bg-white rounded-xl shadow p-6">
+    <p class="text-sm text-gray-500">Tutores ativos</p>
+    <p class="text-3xl font-bold text-emerald-700"><%= Tutor.ativos.count %></p>
+  </div>
+  <div class="bg-white rounded-xl shadow p-6">
+    <p class="text-sm text-gray-500">Pets cadastrados</p>
+    <p class="text-3xl font-bold text-emerald-700"><%= Pet.count %></p>
+  </div>
+  <div class="bg-white rounded-xl shadow p-6">
+    <p class="text-sm text-gray-500">Agendamentos</p>
+    <p class="text-3xl font-bold text-emerald-700"><%= Agendamento.count %></p>
+  </div>
+</div>
+<div class="bg-white rounded-xl shadow p-6">
+  <h2 class="text-lg font-semibold text-gray-800 mb-4">Bem-vinda ao PetVet</h2>
+  <p class="text-gray-600">Use o menu ao lado para navegar entre tutores, pets e o histórico da clínica.</p>
+</div>

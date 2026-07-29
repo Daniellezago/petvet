@@ -1,2 +1,37 @@
-<h1>Tutores#index</h1>
-<p>Find me in app/views/tutores/index.html.erb</p>
+<% content_for :title, "Tutores" %>
+
+<div class="flex justify-between items-center mb-6">
+  <h2 class="text-xl font-semibold text-gray-800">Tutores</h2>
+  <%= link_to "Novo tutor", new_tutor_path,
+      class: "bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded font-semibold transition" %>
+</div>
+
+<div class="bg-white rounded-xl shadow overflow-hidden">
+  <table class="w-full text-sm text-left">
+    <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
+      <tr>
+        <th class="px-6 py-3">Nome</th>
+        <th class="px-6 py-3">Email</th>
+        <th class="px-6 py-3">Telefone</th>
+        <th class="px-6 py-3">Ações</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      <% @tutores.each do |tutor| %>
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-3 font-medium text-gray-800"><%= tutor.nome %></td>
+          <td class="px-6 py-3 text-gray-600"><%= tutor.email %></td>
+          <td class="px-6 py-3 text-gray-600"><%= tutor.telefone %></td>
+          <td class="px-6 py-3 space-x-2">
+            <%= link_to "Ver", tutor_path(tutor), class: "text-emerald-700 hover:underline" %>
+            <%= link_to "Editar", edit_tutor_path(tutor), class: "text-blue-600 hover:underline" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="mt-4">
+  <%= paginate @tutores if @tutores.respond_to?(:current_page) %>
+</div>

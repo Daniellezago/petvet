@@ -12,15 +12,15 @@ Rails.application.routes.draw do
   # DEVISE — SCOPE ÚNICO (:user)
   # ================================
   devise_for :users,
-             path: "",
-             path_names: {
-               sign_in: "login",
-               sign_out: "logout"
-             }
+              path: "",
+              path_names: {
+              sign_in: "login",
+              sign_out: "logout"
+            }
 
   root to: "dashboard#index"
   resources :tutores
-  resources :pets, only: [ :index, :show, :create, :update ]
+  resources :pets, only: [ :index, :show, :new, :create, :edit, :update ]
   resources :consultas
   resources :vacinas
   resources :agendamentos

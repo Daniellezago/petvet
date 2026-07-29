@@ -22,9 +22,64 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
-      <%= yield %>
-    </main>
+  <body class="bg-gray-50">
+    <% if user_signed_in? %>
+      <div class="flex h-screen overflow-hidden">
+
+        <!-- SIDEBAR -->
+        <aside class="w-64 bg-emerald-700 text-white flex flex-col">
+          <div class="p-6 text-2xl font-bold border-b border-emerald-600">
+            🐾 PetVet
+          </div>
+
+          <nav class="flex-1 px-3 py-4 space-y-1">
+            <%= link_to "Dashboard", root_path,
+                class: "block px-3 py-2 rounded hover:bg-emerald-600 transition" %>
+            <%= link_to "Tutores", tutores_path,
+                class: "block px-3 py-2 rounded hover:bg-emerald-600 transition" %>
+                <%= link_to "Pets", pets_path, class: "block px-3 py-2 rounded hover:bg-emerald-600 transition" %>
+          </nav>
+        </aside>
+
+        <!-- ÁREA PRINCIPAL -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+
+          <!-- TOPBAR -->
+          <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+            <h1 class="text-lg font-semibold text-gray-800">
+              <%= content_for(:title) || "Dashboard" %>
+            </h1>
+
+            <div class="flex items-center gap-4">
+              <span class="text-sm text-gray-600"><%= current_user.email %></span>
+              <%= button_to "Sair", destroy_user_session_path, method: :delete,
+                  class: "text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded transition" %>
+            </div>
+          </header>
+
+          <!-- CONTEÚDO DA PÁGINA -->
+          <main class="flex-1 overflow-y-auto p-6">
+            <%= yield %>
+          </main>
+
+        </div>
+      </div>
+
+    <% else %>
+      <!-- SEM LOGIN: página centralizada, sem sidebar -->
+      <main class="min-h-screen flex flex-col items-center justify-center gap-4">
+        <% if notice %>
+          <div class="bg-emerald-50 text-emerald-700 text-sm rounded p-3 max-w-sm w-full text-center">
+            <%= notice %>
+          </div>
+        <% end %>
+        <% if alert %>
+          <div class="bg-red-50 text-red-700 text-sm rounded p-3 max-w-sm w-full text-center">
+            <%= alert %>
+          </div>
+        <% end %>
+        <%= yield %>
+      </main>
+    <% end %>
   </body>
 </html>

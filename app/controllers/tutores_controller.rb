@@ -1,6 +1,7 @@
 class TutoresController < ApplicationController
   before_action :set_tutor, only: [ :show, :edit, :update, :destroy ]
-  after_action :verify_authorized
+  after_action :verify_authorized, except: [ :index ]
+  after_action :verify_policy_scoped, only: [ :index ]
 
   def index
     @tutores = policy_scope(Tutor).page(params[:page]).per(10)

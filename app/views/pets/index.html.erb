@@ -1,0 +1,25 @@
+<% content_for :title, "Pets" %>
+<div class="flex justify-between items-center mb-6">
+  <h2 class="text-xl font-semibold text-gray-800">Pets</h2>
+  <%= link_to "Novo pet", new_pet_path, class: "bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded font-semibold transition" %>
+</div>
+<div class="bg-white rounded-xl shadow overflow-hidden">
+  <table class="w-full text-sm text-left">
+    <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
+      <tr><th class="px-6 py-3">Nome</th><th class="px-6 py-3">Espécie</th><th class="px-6 py-3">Tutor</th><th class="px-6 py-3">Ações</th></tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      <% @pets.each do |pet| %>
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-3 font-medium text-gray-800"><%= pet.nome %></td>
+          <td class="px-6 py-3 text-gray-600"><%= pet.especie %></td>
+          <td class="px-6 py-3 text-gray-600"><%= pet.tutor.nome %></td>
+          <td class="px-6 py-3 space-x-2">
+            <%= link_to "Ver", pet_path(pet), class: "text-emerald-700 hover:underline" %>
+            <%= link_to "Editar", edit_pet_path(pet), class: "text-blue-600 hover:underline" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
