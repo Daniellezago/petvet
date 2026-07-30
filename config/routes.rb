@@ -2,30 +2,28 @@ Rails.application.routes.draw do
   mount Rswag::Ui::Engine => "/api-docs"
   mount Rswag::Api::Engine => "/api-docs"
   get "up" => "rails/health#show", as: :rails_health_check
-  get "dashboard/index"
-  get "tutores/index"
-  get "tutores/show"
-  get "tutores/new"
-  get "tutores/edit"
 
   # ================================
   # DEVISE — SCOPE ÚNICO (:user)
   # ================================
   devise_for :users,
-              path: "",
-              path_names: {
-              sign_in: "login",
-              sign_out: "logout"
+            path: "",
+            path_names: {
+            sign_in: "login",
+            sign_out: "logout"
             }
 
+  get "dashboard/index"
   root to: "dashboard#index"
+
   resources :tutores
   resources :pets, only: [ :index, :show, :new, :create, :edit, :update ]
-  resources :consultas
-  resources :vacinas
+  resources :pesos, only: [ :index, :show, :new, :create, :edit, :update ]
+  resources :consultas, only: [ :index, :show, :new, :create, :edit, :update ]
+  resources :vacinas, only: [ :index, :show, :new, :create, :edit, :update ]
+  resources :exames, only: [ :index, :show, :new, :create, :edit, :update ]
   resources :agendamentos
   resources :contratos
-  resources :exames
 
   # ================================
   # ROTAS API (JWT) — reaproveitam o scope :user do Devise
@@ -43,8 +41,9 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :tutores, only: [ :index, :show, :create, :update, :destroy ]
-      # Pet NUNCA  deve ter rota de destroy - histórico médico é permanente
+      # Pet NUNCA deve ter rota de destroy - histórico médico é permanente
       resources :pets, only: [ :index, :show, :create, :update ]
+      resources :pesos, only: [ :index, :show, :create, :update ]
       resources :consultas, only: [ :index, :show, :create, :update ]
       resources :vacinas, only: [ :index, :show, :create, :update ]
       resources :agendamentos, only: [ :index, :show, :create, :update, :destroy ]
