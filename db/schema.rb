@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_28_223758) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_29_235809) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -108,6 +108,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_28_223758) do
     t.index ["jti"], name: "index_jwt_denylists_on_jti"
   end
 
+  create_table "pesos", force: :cascade do |t|
+    t.date "data", null: false
+    t.decimal "peso", precision: 5, scale: 2, null: false
+    t.text "observacoes"
+    t.integer "pet_id", null: false
+    t.integer "usuario_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pet_id"], name: "index_pesos_on_pet_id"
+    t.index ["usuario_id"], name: "index_pesos_on_usuario_id"
+  end
+
   create_table "pets", force: :cascade do |t|
     t.string "nome", null: false
     t.string "especie", null: false
@@ -118,6 +130,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_28_223758) do
     t.integer "tutor_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "castrado", default: false, null: false
+    t.integer "porte", default: 1, null: false
+    t.string "cor"
     t.index ["nome"], name: "index_pets_on_nome"
     t.index ["tutor_id"], name: "index_pets_on_tutor_id"
   end
@@ -192,6 +207,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_28_223758) do
   add_foreign_key "contratos", "tutors"
   add_foreign_key "exames", "pets"
   add_foreign_key "exames", "users", column: "usuario_id"
+  add_foreign_key "pesos", "pets"
+  add_foreign_key "pesos", "users", column: "usuario_id"
   add_foreign_key "pets", "tutors"
   add_foreign_key "receituarios", "pets"
   add_foreign_key "receituarios", "users", column: "usuario_id"

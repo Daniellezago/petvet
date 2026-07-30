@@ -47,6 +47,12 @@ RSpec.describe Pet, type: :model do
     end
   end
 
+  describe "enum porte" do
+    it "assume 'medio' como padrão" do
+      expect(create(:pet).medio?).to be true
+    end
+  end
+
   describe "factory" do
     it "tem uma factory válida" do
       expect(build(:pet)).to be_valid
@@ -72,6 +78,23 @@ RSpec.describe Pet, type: :model do
       pet = create(:pet)
 
       expect { pet.destroy! }.to raise_error(ActiveRecord::RecordNotDestroyed)
+    end
+  end
+
+  describe "idade calculada" do
+    it "retorna anos e meses corretamente" do
+      pet = build(:pet, data_nascimento: 2.years.ago - 3.months)
+      expect(pet.idade).to match(/2 anos, 3 mes/)
+    end
+
+    it "retorna só meses quando tem menos de 1 ano" do
+      pet = build(:pet, data_nascimento: 5.months.ago)
+      expect(pet.idade).to match(/5 mes/)
+    end
+
+    it "retorna nil sem data de nascimento" do
+      pet = build(:pet, data_nascimento: nil)
+      expect(pet.idade).to be_nil
     end
   end
 end

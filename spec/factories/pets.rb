@@ -7,6 +7,9 @@ FactoryBot.define do
     data_nascimento { Faker::Date.birthday(min_age: 0, max_age: 15) }
     peso_atual { Faker::Number.decimal(l_digits: 1, r_digits: 2) }
     association :tutor
+    castrado { false }
+    porte { :medio }
+    cor { "Caramelo" }
 
     trait :gato do
       especie { "Gato" }
