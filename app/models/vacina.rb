@@ -2,6 +2,8 @@ class Vacina < ApplicationRecord
   belongs_to :pet
   belongs_to :usuario, class_name: "User"
 
+  enum :categoria, { vacina: 0, antiparasitario: 1 }, default: :vacina
+
   validates :nome, presence: true
   validates :data_aplicacao, presence: true
 

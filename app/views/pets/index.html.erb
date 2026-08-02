@@ -6,13 +6,30 @@
 <div class="bg-white rounded-xl shadow overflow-hidden">
   <table class="w-full text-sm text-left">
     <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
-      <tr><th class="px-6 py-3">Nome</th><th class="px-6 py-3">Espécie</th><th class="px-6 py-3">Tutor</th><th class="px-6 py-3">Ações</th></tr>
+      <tr>
+        <th class="px-6 py-3">Nome</th>
+        <th class="px-6 py-3">Espécie</th>
+        <th class="px-6 py-3">Idade</th>
+        <th class="px-6 py-3">Castrado</th>
+        <th class="px-6 py-3">Porte</th>
+        <th class="px-6 py-3">Tutor</th>
+        <th class="px-6 py-3">Ações</th>
+      </tr>
     </thead>
     <tbody class="divide-y divide-gray-100">
       <% @pets.each do |pet| %>
         <tr class="hover:bg-gray-50">
           <td class="px-6 py-3 font-medium text-gray-800"><%= pet.nome %></td>
           <td class="px-6 py-3 text-gray-600"><%= pet.especie %></td>
+          <td class="px-6 py-3 text-gray-600"><%= pet.idade || "-" %></td>
+          <td class="px-6 py-3">
+            <% if pet.castrado? %>
+              <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
+            <% else %>
+              <i data-lucide="x-circle" class="w-4 h-4 text-gray-300"></i>
+            <% end %>
+          </td>
+          <td class="px-6 py-3 text-gray-600"><%= pet.porte %></td>
           <td class="px-6 py-3 text-gray-600"><%= pet.tutor.nome %></td>
           <td class="px-6 py-3 space-x-2">
             <%= link_to "Ver", pet_path(pet), class: "text-emerald-700 hover:underline" %>

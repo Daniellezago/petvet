@@ -24,6 +24,22 @@
     <%= f.label :sexo, class: "block text-sm font-medium text-gray-700 mb-1" %>
     <%= f.select :sexo, [ [ "Macho", "macho" ], [ "Fêmea", "femea" ] ], {}, class: "w-full rounded border border-gray-300 p-2" %>
   </div>
+  <p class="text-gray-600"><span class="font-medium">Idade:</span> <%= @pet.idade || "Não informada" %></p>
+  <p class="text-gray-600"><span class="font-medium">Porte:</span> <%= @pet.porte.capitalize %></p>
+  <p class="text-gray-600"><span class="font-medium">Cor:</span> <%= @pet.cor %></p>
+  <p class="text-gray-600"><span class="font-medium">Castrado:</span> <%= @pet.castrado? ? "Sim" : "Não" %></p>
+  <div>
+  <%= f.label :porte, class: "block text-sm font-medium text-gray-700 mb-1" %>
+  <%= f.select :porte, [ [ "Pequeno", "pequeno" ], [ "Médio", "medio" ], [ "Grande", "grande" ] ], {}, class: "w-full rounded border border-gray-300 p-2" %>
+  </div>
+  <div>
+  <%= f.label :cor, class: "block text-sm font-medium text-gray-700 mb-1" %>
+  <%= f.text_field :cor, class: "w-full rounded border border-gray-300 p-2" %>
+  </div>
+  <div class="flex items-center gap-2">
+  <%= f.check_box :castrado, class: "rounded border-gray-300 text-emerald-600" %>
+  <%= f.label :castrado, "Castrado(a)", class: "text-sm text-gray-600" %>
+  </div>
   <div>
     <%= f.label :data_nascimento, class: "block text-sm font-medium text-gray-700 mb-1" %>
     <%= f.date_field :data_nascimento, class: "w-full rounded border border-gray-300 p-2" %>

@@ -1,0 +1,11 @@
+<% content_for :title, "Pesagem" %>
+<div class="bg-white rounded-xl shadow p-6 max-w-lg space-y-3">
+    <h2 class="text-xl font-semibold text-gray-800"><%= @peso.pet.nome %> — <%= @peso.peso %> kg</h2>
+    <p class="text-gray-600"><span class="font-medium">Data:</span> <%= @peso.data.strftime("%d/%m/%Y") %></p>
+    <p class="text-gray-600"><span class="font-medium">Observações:</span> <%= @peso.observacoes %></p>
+    <div class="flex gap-3 pt-4">
+        <%= link_to "Editar", edit_peso_path(@peso), class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition" %>
+        <%= link_to "Voltar", pesos_path, class: "px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-50" %>
+    </div>
+</div>
+

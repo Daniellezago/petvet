@@ -48,4 +48,8 @@ class VacinasController < ApplicationController
   def vacina_params
     params.require(:vacina).permit(:nome, :data_aplicacao, :proxima_dose, :lote, :fabricante, :observacoes, :pet_id)
   end
+
+  def vacina_params
+    params.require(:vacina).permit(:nome, :categoria, :data_aplicacao, :proxima_dose, :lote, :fabricante, :observacoes, :pet_id)
+  end
 end

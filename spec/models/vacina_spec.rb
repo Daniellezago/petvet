@@ -6,6 +6,16 @@ RSpec.describe Vacina, type: :model do
     it { should belong_to(:usuario).class_name("User") }
   end
 
+  describe "enum categoria" do
+  it "assume 'vacina' como padrão" do
+    expect(create(:vacina).vacina?).to be true
+  end
+
+  it "permite marcar como antiparasitario" do
+    expect(create(:vacina, categoria: :antiparasitario).antiparasitario?).to be true
+  end
+end
+
   describe "validações" do
     it { should validate_presence_of(:nome) }
     it { should validate_presence_of(:data_aplicacao) }

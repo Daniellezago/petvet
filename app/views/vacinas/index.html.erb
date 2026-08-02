@@ -6,12 +6,24 @@
 <div class="bg-white rounded-xl shadow overflow-hidden">
     <table class="w-full text-sm text-left">
     <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
-        <tr><th class="px-6 py-3">Nome</th><th class="px-6 py-3">Pet</th><th class="px-6 py-3">Aplicação</th><th class="px-6 py-3">Próxima dose</th><th class="px-6 py-3">Ações</th></tr>
+        <tr>
+            <th class="px-6 py-3">Nome</th>
+            <th class="px-6 py-3">Categoria</th>
+            <th class="px-6 py-3">Pet</th>
+            <th class="px-6 py-3">Aplicação</th>
+            <th class="px-6 py-3">Próxima dose</th>
+            <th class="px-6 py-3">Ações</th>
+        </tr>
     </thead>
     <tbody class="divide-y divide-gray-100">
         <% @vacinas.each do |vacina| %>
         <tr class="hover:bg-gray-50">
             <td class="px-6 py-3 font-medium text-gray-800"><%= vacina.nome %></td>
+            <td class="px-6 py-3">
+                <span class="text-xs font-semibold px-2 py-1 rounded-full <%= vacina.vacina? ? "bg-emerald-100 text-emerald-700" : "bg-blue-100 text-blue-700" %>">
+                    <%= vacina.vacina? ? "Vacina" : "Antiparasitário" %>
+                </span>
+            </td>
             <td class="px-6 py-3 text-gray-600"><%= vacina.pet.nome %></td>
             <td class="px-6 py-3 text-gray-600"><%= vacina.data_aplicacao.strftime("%d/%m/%Y") %></td>
             <td class="px-6 py-3 text-gray-600"><%= vacina.proxima_dose&.strftime("%d/%m/%Y") || "-" %></td>
