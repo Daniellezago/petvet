@@ -2,6 +2,7 @@ class Agendamento < ApplicationRecord
   belongs_to :tutor
   belongs_to :pet
   belongs_to :usuario, class_name: "User"
+  belongs_to :veterinario, optional: true
 
   enum :status, { agendado: 0, confirmado: 1, realizado: 2, cancelado: 3 }, default: :agendado
   enum :tipo_agendamento, { consulta: 0, exame: 1, cirurgia: 2, banho: 3, tosa: 4 }, default: :consulta

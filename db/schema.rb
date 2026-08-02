@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_29_235809) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_02_020401) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -49,10 +49,12 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_29_235809) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "tipo_agendamento", default: 0, null: false
+    t.integer "veterinario_id"
     t.index ["data_hora"], name: "index_agendamentos_on_data_hora"
     t.index ["pet_id"], name: "index_agendamentos_on_pet_id"
     t.index ["tutor_id"], name: "index_agendamentos_on_tutor_id"
     t.index ["usuario_id"], name: "index_agendamentos_on_usuario_id"
+    t.index ["veterinario_id"], name: "index_agendamentos_on_veterinario_id"
   end
 
   create_table "consultas", force: :cascade do |t|
@@ -191,9 +193,23 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_29_235809) do
     t.integer "usuario_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "categoria", default: 0, null: false
     t.index ["data_aplicacao"], name: "index_vacinas_on_data_aplicacao"
     t.index ["pet_id"], name: "index_vacinas_on_pet_id"
     t.index ["usuario_id"], name: "index_vacinas_on_usuario_id"
+  end
+
+  create_table "veterinarios", force: :cascade do |t|
+    t.string "nome", null: false
+    t.string "crmv", null: false
+    t.string "especialidade"
+    t.string "cor_agenda", default: "#059669", null: false
+    t.boolean "ativo", default: true, null: false
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["crmv"], name: "index_veterinarios_on_crmv", unique: true
+    t.index ["user_id"], name: "index_veterinarios_on_user_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -201,6 +217,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_29_235809) do
   add_foreign_key "agendamentos", "pets"
   add_foreign_key "agendamentos", "tutors"
   add_foreign_key "agendamentos", "users", column: "usuario_id"
+  add_foreign_key "agendamentos", "veterinarios"
   add_foreign_key "consultas", "pets"
   add_foreign_key "consultas", "users", column: "usuario_id"
   add_foreign_key "contratos", "pets"
@@ -214,4 +231,5 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_29_235809) do
   add_foreign_key "receituarios", "users", column: "usuario_id"
   add_foreign_key "vacinas", "pets"
   add_foreign_key "vacinas", "users", column: "usuario_id"
+  add_foreign_key "veterinarios", "users"
 end
