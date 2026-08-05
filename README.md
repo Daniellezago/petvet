@@ -1,8 +1,8 @@
 # 🐾 PetVet
 
-Sistema de gestão veterinária desenvolvido em Ruby on Rails, com API REST autenticada via JWT e interface web com Devise. Inspirado em sistemas como o PetSys, construído do zero com foco em **TDD**, **segurança** e **boas práticas de arquitetura**.
+Sistema de gestão veterinária desenvolvido em Ruby on Rails, com API REST autenticada via JWT, documentação interativa (Swagger/OpenAPI) e interface web em Tailwind CSS + Hotwire. Inspirado em sistemas como o PetSys, construído do zero com foco em **TDD**, **segurança** e **boas práticas de arquitetura**.
 
-> ⚠️ **Projeto em desenvolvimento.** O backend/API está em construção ativa e coberto por testes automatizados. As telas web (views) ainda estão por vir — o foco atual é consolidar o domínio e a API antes de construir a interface.
+> 🚧 **Projeto em desenvolvimento ativo.** Backend e API estão **completos** para as 9 entidades do domínio, com documentação interativa e CI/CD funcionando. Estamos agora na fase de construção das **views web**, seguindo a ordem do menu lateral: Tutores concluído, Pets/Peso/Consulta/Vacina/Exame/Usuários já com tela — restam Receituário, Agendamento, Contrato, Veterinário e os módulos de Procedimentos/Financeiro.
 
 ---
 
@@ -10,124 +10,167 @@ Sistema de gestão veterinária desenvolvido em Ruby on Rails, com API REST aute
 
 - **Ruby** 3.4.4 / **Rails** 8.0.5
 - **Banco de dados:** SQLite (desenvolvimento)
+- **Frontend:** Tailwind CSS, Hotwire (Turbo + Stimulus), Lucide Icons
+- **Gráficos:** Chartkick + Groupdate
 - **Autenticação web:** Devise
 - **Autenticação API:** Devise + JWT (`devise-jwt`)
 - **Autorização:** Pundit (controle de acesso por papéis)
+- **Upload de arquivos:** Active Storage
+- **Documentação de API:** Swagger/OpenAPI via rswag (interativa, em `/api-docs`)
 - **Testes:** RSpec, Capybara, FactoryBot, Faker, Shoulda Matchers, Pundit Matchers
 - **Paginação:** Kaminari
+- **CI/CD:** GitHub Actions (Rubocop, Brakeman, RSpec a cada push)
 
 ---
 
 ## 👥 Papéis de usuário
 
-O sistema possui três papéis distintos, cada um com permissões específicas via Pundit:
-
-- **Admin** — acesso completo, incluindo inativação de cadastros
-- **Veterinário** — acesso operacional ao dia a dia clínico
+- **Admin** — acesso completo, incluindo inativação de cadastros e gestão de usuários
+- **Veterinário** — acesso operacional ao dia a dia clínico, precisa de CRMV cadastrado para emitir receituários
 - **Atendente** — acesso operacional, sem permissões administrativas
 
 ---
 
-## ✅ Funcionalidades implementadas
+## ✅ Backend/API — 100% completo (9 entidades)
+
+Todas as entidades abaixo têm model, migration, policy, controller de API, rotas, testes de model e testes de request, além de documentação Swagger interativa.
 
 ### Autenticação e autorização
 - Login via Devise (web) e JWT (API), com revogação de token (denylist)
-- Senhas fortes obrigatórias (mínimo 8 caracteres, com maiúscula, minúscula, número e caractere especial)
-- Controle de acesso por papel de usuário via Pundit
+- Senhas fortes obrigatórias
+- Controle de acesso por papel via Pundit
 
-### Tutor (cliente)
-- CRUD completo via API (`index`, `show`, `create`, `update`, `destroy`)
-- **Soft delete real:** tutores são inativados (`ativo: false`), nunca removidos do banco
-- **Unicidade escopada:** CPF e e-mail só bloqueiam novos cadastros se o registro duplicado estiver **ativo** — permitindo recadastro caso o antigo tenha sido inativado
-- Apenas administradores podem inativar um tutor
+### Tutor
+- Soft delete real (`ativo: false`, nunca removido do banco)
+- Unicidade de CPF/e-mail escopada a registros ativos (recadastro permitido se o antigo estiver inativo)
 
 ### Pet
-- CRUD via API (`index`, `show`, `create`, `update`)
-- Vinculado a um Tutor (`belongs_to`)
-- **Nunca pode ser removido, em nenhuma hipótese** — histórico médico é permanente, tanto por proteção legal da clínica quanto para o tutor ter acesso ao histórico completo do animal. Essa regra é garantida em três camadas independentes:
-  1. A rota de `destroy` nunca é exposta na API
-  2. A policy (`PetPolicy#destroy?`) sempre nega a autorização
-  3. O próprio model bloqueia `destroy`/`destroy!` via callback, mesmo se chamado diretamente (ex: console Rails)
-- Reatribuição de tutor bloqueada em updates: `tutor_id` só é aceito na criação do pet, nunca em uma edição posterior — evita que um pet seja "transferido" de tutor sem controle
+- Campos: espécie, raça, sexo, porte, cor, castrado, peso atual, idade calculada automaticamente (anos/meses) a partir da data de nascimento
+- **Nunca pode ser removido** — proteção em três camadas (rota, policy, model)
+- `tutor_id` só é aceito na criação, nunca em updates
 
-### Consulta
-- CRUD via API (`index`, `show`, `create`, `update`)
-- Vinculada a um Pet e a um Usuário responsável (`belongs_to`)
-- **Auditoria automática e testada:** o `usuario_id` nunca é aceito via parâmetros do request — é sempre injetado a partir do usuário autenticado (`current_user`) no momento da criação. Um teste dedicado confirma que, mesmo enviando um `usuario_id` diferente no corpo da requisição, o sistema ignora esse valor e grava sempre quem de fato está logado
-- Mesma proteção contra remoção aplicada ao Pet: histórico médico permanente, bloqueado em três camadas (rota, policy, model)
-- Validação de negócio: data da consulta não pode ser futura
+### Peso
+- Histórico de pesagens por pet (data + valor) — entidade resgatada do escopo original que havia ficado de fora
+- Mesma proteção contra remoção das entidades de histórico médico
 
-### Vacina
-- CRUD via API (`index`, `show`, `create`, `update`)
-- Vinculada a um Pet e a um Usuário responsável, mesmo padrão de auditoria e proteção contra remoção da Consulta
-- Validações de negócio próprias: data de aplicação não pode ser futura, e a próxima dose (quando informada) deve ser posterior à data de aplicação
+### Consulta, Vacina, Exame, Receituário
+- Vacina tem campo `categoria` (Vacina / Antiparasitário)
+- Auditoria automática e testada: `usuario_id` sempre vem do usuário autenticado, nunca do formulário
+- Exame aceita upload de laudo (PDF/JPEG/PNG) via Active Storage, com validação de tipo de arquivo (inclusive teste simulando upload malicioso disfarçado)
+- Receituário exige CRMV do usuário responsável, copiado automaticamente no momento da emissão (auditoria dupla: usuário + CRMV)
+- Histórico médico permanente — nunca removido, em três camadas de proteção
 
-### Exame
-- CRUD via API (`index`, `show`, `create`, `update`)
-- Vinculado a um Pet e a um Usuário responsável, mesmo padrão de auditoria e proteção contra remoção de Consulta e Vacina
-- Upload de arquivo (laudo em PDF/imagem) via Active Storage planejado como próxima etapa, mantido separado da criação do model para isolar eventuais problemas de configuração
+### Agendamento
+- Tipos: consulta, exame, cirurgia, banho, tosa
+- Campo `veterinario_id` (opcional por enquanto) — base para a futura "Minha Agenda" por profissional
+- Validação cruzada: o pet informado deve pertencer ao tutor informado
+- Diferente das entidades de histórico médico, pode ser removido de verdade (restrito a admin)
+
+### Contrato/Plano
+- Tipos: particular ou convênio
+- Campos de convênio (nome, carteirinha, percentual de cobertura) obrigatórios apenas quando `tipo_contrato == convenio`
+- Um tutor pode ter múltiplos contratos, um por pet — reflete cenário real de convênios com carteirinha individual por animal, mesmo sob o mesmo titular
+
+### Veterinário (model criado, sem controller/views ainda)
+- Perfil profissional separado do `User` de login: nome, CRMV, especialidade, cor de identificação na agenda
+- `belongs_to :user` — a conta de login continua sendo o `User`; o `Veterinario` guarda os dados profissionais
+
+---
+
+## 🎨 Frontend/Views — em construção
+
+### Já implementado
+- **Layout geral:** sidebar verde-esmeralda com 7 seções colapsáveis, topbar com usuário logado, mensagens flash
+- **Login** estilizado
+- **Dashboard:** cards de métricas, gráfico de área (crescimento com filtro de período: 30 dias/6 meses/1 ano), gráfico donut de pets por raça com legenda detalhada, gráfico de barras Top 5 raças
+- **Tutores:** listagem com busca (nome/email/CPF), filtro de ativos/inativos, ícones de ação rápida (WhatsApp, e-mail, endereço no Google Maps), CPF/telefone mascarados na listagem (LGPD), CRUD completo
+- **Pets:** CRUD completo com todos os campos (incluindo porte, cor, castrado, idade calculada)
+- **Pesos:** CRUD completo
+- **Consultas, Vacinas, Exames:** CRUD completo (Exame com upload de arquivo funcionando via `multipart: true`)
+- **Usuários:** CRUD completo, restrito a admin (seção Sistema)
+
+### Sidebar — estrutura completa (itens sem tela marcados como "em breve" na própria interface)
+1. **Dashboard** ✅
+2. **Cadastros** — Tutores ✅, Pets ✅, Veterinários 🔲, Usuários ✅, Procedimentos 🔲
+3. **Atendimento** — Agendamento Geral (rota existe, view não) 🔲, Agendas por setor (consulta/exame/cirurgia/vacina/estética/hospedagem/internação) 🔲
+4. **Veterinário** — Minha Agenda 🔲, Consultas ✅, Prontuário 🔲, Vacinas Aplicadas ✅, Receituário (backend pronto, view não) 🔲, Histórico 🔲
+5. **Procedimentos Médicos** — Exames ✅, Cirurgias 🔲, Internação 🔲
+6. **Financeiro** — Faturamento 🔲, Contas a Pagar 🔲, Contas a Receber 🔲, Contratos (backend pronto, view não) 🔲
+7. **Sistema** — Configurações 🔲 (restrito a admin)
 
 ---
 
 ## 🧪 Testes
 
-O projeto segue **TDD** com cobertura crescente via RSpec.
-
 ```bash
 bundle exec rspec
 ```
 
-Estado atual: **148 exemplos, 0 falhas** (7 pendências são apenas placeholders de views/helpers ainda não implementados, gerados automaticamente pelo scaffold do Rails).
+Estado atual: **300+ exemplos, 0 falhas** (rodar localmente para número exato — cresce a cada view nova que ganha teste).
 
 Principais suítes:
-- `spec/models` — validações, associações, regras de negócio (ex: proteção contra `destroy`, datas que não podem ser futuras)
-- `spec/policies` — regras de autorização por papel (admin/veterinário/atendente)
-- `spec/requests/api/v1` — comportamento da API ponta a ponta (autenticação JWT, permissões, status HTTP, auditoria)
+- `spec/models` — validações, associações, regras de negócio
+- `spec/policies` — autorização por papel
+- `spec/requests/api/v1` — comportamento da API ponta a ponta
+- `spec/requests/api/v1/docs` — specs que geram a documentação Swagger automaticamente
 
 ---
 
 ## 🚀 Rodando localmente
 
 ```bash
-# Clonar o repositório
 git clone https://github.com/Daniellezago/petvet
 cd petvet
-
-# Instalar dependências
 bundle install
-
-# Preparar o banco de dados
 bin/rails db:create db:migrate
-
-# Rodar os testes
 bundle exec rspec
-
-# Subir o servidor
-bin/rails s
+bin/dev
 ```
 
-> As rotas da API estão disponíveis em `/api/v1/...` (ex: `POST /api/v1/users/sign_in` para login). As views web ainda estão em construção.
+`bin/dev` sobe o servidor Rails **e** o compilador do Tailwind simultaneamente. API em `/api/v1/...`, documentação interativa em `/api-docs`.
 
 ---
 
 ## 🗺️ Roadmap
 
-- [x] Migração de `role` (User) e `sexo` (Pet) para enums nativos do Rails
-- [x] Model Consulta (histórico médico permanente, com auditoria automática do usuário responsável)
-- [x] Model Vacina (mesmo padrão de Consulta: histórico permanente + auditoria)
-- [x] Model Exame (mesmo padrão + Active Storage para upload, ainda por vir)
-- [ ] Upload de exames via Active Storage, com validação estrita de Content-Type (PDF, JPEG, PNG)
-- [ ] Model Receituário
-- [ ] Model Agendamento e Contrato/Plano (`status` do Agendamento já nasce como enum nativo, sem dívida técnica)
-- [ ] Construção das views web (interface visual)
-- [ ] Containerização com Docker (fase avançada — atualmente o projeto roda localmente via asdf)
+### ✅ Backend/API — concluído
+- 9 entidades completas com model, policy, controller, testes e documentação Swagger
+- Enums nativos em todos os campos categóricos (sem dívida técnica)
+- Upload de arquivos, paginação, CI/CD, formato de erro padronizado
+
+### 🔨 Frontend — próximos passos, na ordem do menu
+1. **Cadastros → Veterinários:** controller, policy, views (CRUD completo) — depois, tornar `veterinario_id` obrigatório em Agendamento
+2. **Cadastros → Procedimentos:** novo model `Procedimento` (nome, categoria, **valor**) — catálogo de serviços, base do futuro Faturamento
+3. **Atendimento → Agendamento Geral:** view web (model/controller de API já existem)
+4. **Atendimento → Agendas por setor:** telas filtradas por `tipo_agendamento`
+5. **Veterinário → Minha Agenda:** agendamentos filtrados pelo `veterinario_id` do usuário logado
+6. **Veterinário → Receituário:** view web (backend 100% pronto, só falta a tela)
+7. **Veterinário → Prontuário, Histórico:** views agregando dados de Consulta/Vacina/Exame/Receituário por pet
+8. **Procedimentos Médicos → Cirurgias, Internação:** novo model `Internacao` (ocupação de leito por período, diferente de agendamento por horário)
+9. **Financeiro:** Contratos precisa de view web; Contas a Pagar/Receber e Faturamento são models novos
+
+### 📌 Funcionalidades transversais pendentes
+- Botão "Imprimir" em Exames e Receituários (`window.print()` + CSS `@media print`)
+- "Esqueci minha senha" (base do Devise `:recoverable` já existe)
+- Confirmação de e-mail no cadastro (`:confirmable`)
+- Containerização com Docker
+
+### 🔭 Expansões futuras (pós-v1)
+- Integração de pagamentos
+- Portal do cliente (Tutor acessa os próprios dados)
+- Notificações automáticas de agendamento
+- Hospedagem/Day Care
 
 ---
 
 ## 📌 Decisões técnicas de destaque
 
-- **Soft delete com unicidade escopada:** em vez de bloquear permanentemente CPF/e-mail já usados, a validação de unicidade considera apenas registros ativos — resolvendo um problema comum em sistemas de cadastro com histórico.
-- **Proteção em camadas (defense in depth):** a regra "histórico médico nunca é removido" (Pet, Consulta) não depende de um único ponto de falha — está garantida na rota, na policy e no model, então mesmo um erro de código em uma camada não quebra a garantia.
-- **Separação de parâmetros por ação:** `tutor_id` é permitido apenas no `create` de Pet, nunca no `update`, evitando reatribuições não auditadas.
-- **Auditoria real, não decorativa:** o `usuario_id` de uma Consulta nunca vem do request — é sempre injetado a partir do usuário autenticado no controller. Um teste dedicado tenta ativamente burlar essa regra (enviando um `usuario_id` diferente no corpo da requisição) para confirmar que o sistema realmente ignora esse valor.
-- **Inflexão de nomes em português:** o Rails, por padrão, assume regras de pluralização em inglês. Palavras terminadas em `"ta"` (como `Consulta`) são tratadas como já plurais, o que fazia `Consulta.table_name` resolver incorretamente para `"consulta"` em vez de `"consultas"`. Corrigido com uma regra de inflexão irregular em `config/initializers/inflections.rb` — um cuidado necessário em qualquer projeto Rails em português.
+- **Soft delete com unicidade escopada:** validação de unicidade de CPF/e-mail considera apenas registros ativos.
+- **Proteção em camadas (defense in depth):** "histórico médico nunca é removido" garantido na rota, na policy e no model simultaneamente.
+- **Auditoria real, não decorativa:** `usuario_id` nunca vem do request — testes tentam ativamente burlar essa regra. Receituário tem auditoria dupla (usuário + CRMV).
+- **Inflexão de nomes em português:** Rails assume pluralização em inglês por padrão; corrigido com regras customizadas para "Consulta", "Tutor" e outras palavras.
+- **Modelagem de convênio baseada em cenário real:** Contrato vinculado a Tutor **e** a um Pet específico, refletindo carteirinha individual por animal mesmo sob o mesmo titular.
+- **Veterinário separado de User:** perfil profissional distinto da conta de login.
+- **UI documenta o roadmap:** itens do menu sem backend aparecem desabilitados com "(em breve)" em vez de simplesmente não existir.
+- **LGPD na listagem de Tutores:** CPF e telefone mascarados na tabela, dado completo só na tela de detalhe.
+
