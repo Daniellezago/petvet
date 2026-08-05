@@ -3,8 +3,21 @@ class TutoresController < ApplicationController
   after_action :verify_authorized, except: [ :index ]
   after_action :verify_policy_scoped, only: [ :index ]
 
+  COLUNAS_ORDENAVEIS = %w[nome cpf].freeze
+
   def index
-    @tutores = policy_scope(Tutor).page(params[:page]).per(10)
+    @tutores = policy_scope(Tutor)
+    @tutores = @tutores.ativos unless params[:mostrar_inativos] == "1"
+
+    if params[:busca].present?
+      termo = "%#{params[:busca]}%"
+      @tutores = @tutores.where("nome LIKE :t OR email LIKE :t OR cpf LIKE :t", t: termo)
+    end
+
+    coluna = COLUNAS_ORDENAVEIS.include?(params[:sort]) ? params[:sort] : "nome"
+    direcao = params[:direction] == "desc" ? "desc" : "asc"
+
+    @tutores = @tutores.order(coluna => direcao).page(params[:page]).per(10)
   end
 
   def show

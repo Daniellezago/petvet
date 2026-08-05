@@ -1,18 +1,51 @@
 <% content_for :title, "Tutores" %>
 
-<div class="flex justify-between items-center mb-6">
+<div class="mb-6">
   <h2 class="text-xl font-semibold text-gray-800">Tutores</h2>
-  <%= link_to "Novo tutor", new_tutor_path,
-      class: "bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded font-semibold transition" %>
 </div>
 
 <div class="bg-white rounded-xl shadow overflow-hidden">
+  <div class="flex justify-between items-center px-6 pt-5 pb-4 border-b border-gray-100">
+    <div>
+      <h3 class="text-base font-semibold text-gray-800">Lista de tutores</h3>
+      <p class="text-xs text-gray-400 mt-0.5">
+        <%= pluralize(@tutores.total_count, "tutor cadastrado", "tutores cadastrados") %>
+      </p>
+    </div>
+    <%= link_to new_tutor_path, class: "bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded font-semibold transition flex items-center gap-2" do %>
+      <i data-lucide="plus" class="w-4 h-4"></i> Novo tutor
+    <% end %>
+  </div>
+
+  <%= form_with url: tutores_path, method: :get, local: true, class: "flex items-center justify-between gap-4 px-6 py-4 border-b border-gray-100" do |f| %>
+    <div class="relative flex-1 max-w-md">
+      <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+      <%= f.text_field :busca, value: params[:busca], placeholder: "Buscar por nome, email ou CPF...",
+          class: "w-full pl-9 rounded border border-gray-300 p-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" %>
+    </div>
+
+    <label class="flex items-center gap-2 text-sm cursor-pointer select-none">
+      <span class="<%= params[:mostrar_inativos] == "1" ? "text-gray-400" : "text-emerald-700 font-semibold" %>">Ativos</span>
+
+      <span class="relative inline-block w-10 h-5">
+        <%= f.check_box :mostrar_inativos,
+              { checked: params[:mostrar_inativos] == "1", class: "sr-only peer", onchange: "this.form.requestSubmit()" },
+              "1", "0" %>
+        <span class="absolute inset-0 rounded-full bg-gray-300 peer-checked:bg-gray-600 transition-colors pointer-events-none"></span>
+        <span class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-5 pointer-events-none"></span>
+      </span>
+
+      <span class="<%= params[:mostrar_inativos] == "1" ? "text-gray-700 font-semibold" : "text-gray-400" %>">Inativos</span>
+    </label>
+  <% end %>
+
   <table class="w-full text-sm text-left">
     <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
       <tr>
-        <th class="px-6 py-3">Nome</th>
-        <th class="px-6 py-3">Email</th>
-        <th class="px-6 py-3">Telefone</th>
+        <th class="px-6 py-3"><%= sortable_column_link("Nome", "nome") %></th>
+        <th class="px-6 py-3">Contato</th>
+        <th class="px-6 py-3"><%= sortable_column_link("CPF", "cpf") %></th>
+        <th class="px-6 py-3">Status</th>
         <th class="px-6 py-3">Ações</th>
       </tr>
     </thead>
@@ -20,8 +53,34 @@
       <% @tutores.each do |tutor| %>
         <tr class="hover:bg-gray-50">
           <td class="px-6 py-3 font-medium text-gray-800"><%= tutor.nome %></td>
-          <td class="px-6 py-3 text-gray-600"><%= tutor.email %></td>
-          <td class="px-6 py-3 text-gray-600"><%= tutor.telefone %></td>
+          <td class="px-6 py-3">
+            <div class="flex items-center gap-3">
+              <% telefone_limpo = tutor.telefone.to_s.gsub(/\D/, "") %>
+              <% if telefone_limpo.present? %>
+                <%= link_to "https://wa.me/55#{telefone_limpo}", target: "_blank", rel: "noopener",
+                    title: "Abrir WhatsApp", class: "text-emerald-600 hover:text-emerald-800" do %>
+                  <i data-lucide="message-circle" class="w-4 h-4"></i>
+                <% end %>
+              <% end %>
+              <%= link_to "mailto:#{tutor.email}", title: "Enviar e-mail", class: "text-blue-600 hover:text-blue-800" do %>
+                <i data-lucide="mail" class="w-4 h-4"></i>
+              <% end %>
+              <% if tutor.endereco.present? %>
+                <%= link_to "https://www.google.com/maps/search/?api=1&query=#{CGI.escape(tutor.endereco)}",
+                    target: "_blank", rel: "noopener", title: tutor.endereco, class: "text-amber-600 hover:text-amber-800" do %>
+                  <i data-lucide="map-pin" class="w-4 h-4"></i>
+                <% end %>
+              <% end %>
+            </div>
+          </td>
+          <td class="px-6 py-3 text-gray-600 font-mono text-xs"><%= mascarar_cpf(tutor.cpf) %></td>
+          <td class="px-6 py-3">
+            <% if tutor.ativo? %>
+              <span class="text-xs font-semibold px-2 py-1 rounded-full bg-emerald-100 text-emerald-700">Ativo</span>
+            <% else %>
+              <span class="text-xs font-semibold px-2 py-1 rounded-full bg-gray-100 text-gray-500">Inativo</span>
+            <% end %>
+          </td>
           <td class="px-6 py-3 space-x-2">
             <%= link_to "Ver", tutor_path(tutor), class: "text-emerald-700 hover:underline" %>
             <%= link_to "Editar", edit_tutor_path(tutor), class: "text-blue-600 hover:underline" %>
@@ -30,8 +89,14 @@
       <% end %>
     </tbody>
   </table>
+
+  <% if @tutores.empty? %>
+    <p class="text-center text-gray-400 py-8 text-sm">Nenhum tutor encontrado.</p>
+  <% end %>
 </div>
 
 <div class="mt-4">
   <%= paginate @tutores if @tutores.respond_to?(:current_page) %>
 </div>
+
+
