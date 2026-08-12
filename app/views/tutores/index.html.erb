@@ -1,19 +1,18 @@
 <% content_for :title, "Tutores" %>
 
-<div class="mb-6">
-  <h2 class="text-xl font-semibold text-gray-800">Tutores</h2>
-</div>
-
 <div class="bg-white rounded-xl shadow overflow-hidden">
   <div class="flex justify-between items-center px-6 pt-5 pb-4 border-b border-gray-100">
-    <div>
-      <h3 class="text-base font-semibold text-gray-800">Lista de tutores</h3>
-      <p class="text-xs text-gray-400 mt-0.5">
-        <%= pluralize(@tutores.total_count, "tutor cadastrado", "tutores cadastrados") %>
-      </p>
+    <div class="flex items-center gap-2">
+      <i data-lucide="users" class="w-5 h-5 text-emerald-600"></i>
+      <div>
+        <h3 class="text-base font-semibold text-gray-800">Lista de Tutores</h3>
+        <p class="text-xs text-gray-400 mt-0.5">
+          <%= pluralize(@tutores.total_count, "Tutor cadastrado", "Tutores cadastrados") %>
+        </p>
+      </div>
     </div>
     <%= link_to new_tutor_path, class: "bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded font-semibold transition flex items-center gap-2" do %>
-      <i data-lucide="plus" class="w-4 h-4"></i> Novo tutor
+      <i data-lucide="plus" class="w-4 h-4"></i> Novo Tutor
     <% end %>
   </div>
 
@@ -43,7 +42,7 @@
     <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
       <tr>
         <th class="px-6 py-3"><%= sortable_column_link("Nome", "nome") %></th>
-        <th class="px-6 py-3">Contato</th>
+        <th class="px-6 py-3"><%= sortable_column_link("Contato", "email") %></th>
         <th class="px-6 py-3"><%= sortable_column_link("CPF", "cpf") %></th>
         <th class="px-6 py-3">Status</th>
         <th class="px-6 py-3">Ações</th>
@@ -54,20 +53,20 @@
         <tr class="hover:bg-gray-50">
           <td class="px-6 py-3 font-medium text-gray-800"><%= tutor.nome %></td>
           <td class="px-6 py-3">
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-1">
               <% telefone_limpo = tutor.telefone.to_s.gsub(/\D/, "") %>
               <% if telefone_limpo.present? %>
                 <%= link_to "https://wa.me/55#{telefone_limpo}", target: "_blank", rel: "noopener",
-                    title: "Abrir WhatsApp", class: "text-emerald-600 hover:text-emerald-800" do %>
+                    title: "Abrir WhatsApp", class: "text-emerald-600 hover:bg-emerald-50 rounded-full p-1.5 transition" do %>
                   <i data-lucide="message-circle" class="w-4 h-4"></i>
                 <% end %>
               <% end %>
-              <%= link_to "mailto:#{tutor.email}", title: "Enviar e-mail", class: "text-blue-600 hover:text-blue-800" do %>
+              <%= link_to "mailto:#{tutor.email}", title: "Enviar e-mail", class: "text-blue-600 hover:bg-blue-50 rounded-full p-1.5 transition" do %>
                 <i data-lucide="mail" class="w-4 h-4"></i>
               <% end %>
               <% if tutor.endereco.present? %>
                 <%= link_to "https://www.google.com/maps/search/?api=1&query=#{CGI.escape(tutor.endereco)}",
-                    target: "_blank", rel: "noopener", title: tutor.endereco, class: "text-amber-600 hover:text-amber-800" do %>
+                    target: "_blank", rel: "noopener", title: tutor.endereco, class: "text-amber-600 hover:bg-amber-50 rounded-full p-1.5 transition" do %>
                   <i data-lucide="map-pin" class="w-4 h-4"></i>
                 <% end %>
               <% end %>
@@ -98,5 +97,6 @@
 <div class="mt-4">
   <%= paginate @tutores if @tutores.respond_to?(:current_page) %>
 </div>
+
 
 

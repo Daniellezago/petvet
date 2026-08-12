@@ -3,7 +3,7 @@ class TutoresController < ApplicationController
   after_action :verify_authorized, except: [ :index ]
   after_action :verify_policy_scoped, only: [ :index ]
 
-  COLUNAS_ORDENAVEIS = %w[nome cpf].freeze
+  COLUNAS_ORDENAVEIS = %w[nome cpf email].freeze
 
   def index
     @tutores = policy_scope(Tutor)

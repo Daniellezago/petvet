@@ -1,14 +1,88 @@
 <% content_for :title, @tutor.nome %>
 
-<div class="bg-white rounded-xl shadow p-6 max-w-lg space-y-3">
-  <h2 class="text-xl font-semibold text-gray-800"><%= @tutor.nome %></h2>
-  <p class="text-gray-600"><span class="font-medium">Email:</span> <%= @tutor.email %></p>
-  <p class="text-gray-600"><span class="font-medium">Telefone:</span> <%= @tutor.telefone %></p>
-  <p class="text-gray-600"><span class="font-medium">CPF:</span> <%= @tutor.cpf %></p>
-  <p class="text-gray-600"><span class="font-medium">Endereço:</span> <%= @tutor.endereco %></p>
+<div class="mb-6">
+  <%= link_to tutores_path, class: "inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-2" do %>
+    <i data-lucide="arrow-left" class="w-4 h-4"></i> Voltar para tutores
+  <% end %>
+</div>
 
-  <div class="flex gap-3 pt-4">
-    <%= link_to "Editar", edit_tutor_path(@tutor), class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition" %>
-    <%= link_to "Voltar", tutores_path, class: "px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-50" %>
+<div class="bg-white rounded-xl shadow max-w-2xl">
+  <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center shrink-0">
+        <i data-lucide="user" class="w-6 h-6 text-emerald-600"></i>
+      </div>
+      <div>
+        <h2 class="text-lg font-semibold text-gray-800"><%= @tutor.nome %></h2>
+        <% if @tutor.ativo? %>
+          <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Ativo</span>
+        <% else %>
+          <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">Inativo</span>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <% telefone_limpo = @tutor.telefone.to_s.gsub(/\D/, "") %>
+      <% if telefone_limpo.present? %>
+        <%= link_to "https://wa.me/55#{telefone_limpo}", target: "_blank", rel: "noopener",
+            title: "Abrir WhatsApp", class: "text-emerald-600 hover:text-emerald-800" do %>
+          <i data-lucide="message-circle" class="w-5 h-5"></i>
+        <% end %>
+      <% end %>
+      <%= link_to "mailto:#{@tutor.email}", title: "Enviar e-mail", class: "text-blue-600 hover:text-blue-800" do %>
+        <i data-lucide="mail" class="w-5 h-5"></i>
+      <% end %>
+      <% if @tutor.endereco.present? %>
+        <%= link_to "https://www.google.com/maps/search/?api=1&query=#{CGI.escape(@tutor.endereco)}",
+            target: "_blank", rel: "noopener", title: @tutor.endereco, class: "text-amber-600 hover:text-amber-800" do %>
+          <i data-lucide="map-pin" class="w-5 h-5"></i>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="px-6 py-6 space-y-4">
+    <div class="flex items-start gap-3">
+      <i data-lucide="mail" class="w-4 h-4 text-gray-400 mt-0.5"></i>
+      <div>
+        <p class="text-xs text-gray-400">E-mail</p>
+        <p class="text-sm text-gray-800"><%= @tutor.email %></p>
+      </div>
+    </div>
+
+    <div class="flex items-start gap-3">
+      <i data-lucide="phone" class="w-4 h-4 text-gray-400 mt-0.5"></i>
+      <div>
+        <p class="text-xs text-gray-400">Telefone</p>
+        <p class="text-sm text-gray-800"><%= @tutor.telefone %></p>
+      </div>
+    </div>
+
+    <div class="flex items-start gap-3">
+      <i data-lucide="id-card" class="w-4 h-4 text-gray-400 mt-0.5"></i>
+      <div>
+        <p class="text-xs text-gray-400">CPF</p>
+        <p class="text-sm text-gray-800 font-mono"><%= @tutor.cpf %></p>
+      </div>
+    </div>
+
+    <div class="flex items-start gap-3">
+      <i data-lucide="map-pin" class="w-4 h-4 text-gray-400 mt-0.5"></i>
+      <div>
+        <p class="text-xs text-gray-400">Endereço</p>
+        <p class="text-sm text-gray-800"><%= @tutor.endereco.presence || "-" %></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="px-6 py-4 border-t border-gray-100 flex items-center gap-3">
+    <%= link_to edit_tutor_path(@tutor), class: "bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition flex items-center gap-2" do %>
+      <i data-lucide="pencil" class="w-4 h-4"></i> Editar
+    <% end %>
+    <%= link_to tutores_path, class: "px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 transition" do %>
+      Voltar
+    <% end %>
   </div>
 </div>
+
