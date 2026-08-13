@@ -86,4 +86,3 @@ class TutoresController < ApplicationController
     # O usuário nunca pode manipular esses campos via formulário
   end
 end
-

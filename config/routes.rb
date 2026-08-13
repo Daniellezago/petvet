@@ -16,7 +16,12 @@ Rails.application.routes.draw do
   get "dashboard/index"
   root to: "dashboard#index"
 
-  resources :tutores
+  resources :tutores do
+    member do
+      patch :reativar
+    end
+  end
+
   resources :usuarios, only: [ :index, :show, :new, :create, :edit, :update ]
   resources :pets, only: [ :index, :show, :new, :create, :edit, :update ]
   resources :pesos, only: [ :index, :show, :new, :create, :edit, :update ]

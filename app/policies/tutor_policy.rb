@@ -19,9 +19,13 @@ class TutorPolicy < ApplicationPolicy
     user.admin?
   end
 
+  def reativar?
+    user.admin?
+  end
+
   class Scope < ApplicationPolicy::Scope
     def resolve
-      scope.ativos
+      scope.all
     end
   end
 end
