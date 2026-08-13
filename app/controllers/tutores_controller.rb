@@ -4,6 +4,7 @@ class TutoresController < ApplicationController
   after_action :verify_policy_scoped, only: [ :index ]
 
   COLUNAS_ORDENAVEIS = %w[nome cpf email].freeze
+  PER_PAGE_PERMITIDOS = [ 10, 20, 50 ].freeze
 
   def index
     @tutores = policy_scope(Tutor)
@@ -17,7 +18,9 @@ class TutoresController < ApplicationController
     coluna = COLUNAS_ORDENAVEIS.include?(params[:sort]) ? params[:sort] : "nome"
     direcao = params[:direction] == "desc" ? "desc" : "asc"
 
-    @tutores = @tutores.order(coluna => direcao).page(params[:page]).per(10)
+    por_pagina = PER_PAGE_PERMITIDOS.include?(params[:per_page].to_i) ? params[:per_page].to_i : 10
+
+    @tutores = @tutores.order(coluna => direcao).page(params[:page]).per(por_pagina)
   end
 
   def show

@@ -95,8 +95,9 @@
 </div>
 
 <div class="mt-4">
-  <%= paginate @tutores if @tutores.respond_to?(:current_page) %>
+  <%= render "shared/pagination", collection: @tutores %>
 </div>
+
 
 
 

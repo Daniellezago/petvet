@@ -1,0 +1,50 @@
+<% if collection.respond_to?(:total_pages) && collection.total_pages > 0 %>
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 bg-white rounded-xl shadow text-sm">
+        <div class="flex items-center gap-3 text-gray-500">
+            <span>Linhas por página</span>
+            <select onchange="location.href=this.value"
+                class="rounded border border-gray-300 py-1.5 pl-2 pr-7 text-sm text-gray-700 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+        <% [ 10, 20, 50 ].each do |n| %>
+            <option value="<%= url_for(request.query_parameters.merge(per_page: n, page: nil)) %>"
+                    <%= "selected" if collection.limit_value == n %>>
+            <%= n %>
+            </option>
+        <% end %>
+            </select>
+            <span class="whitespace-nowrap">
+        <%= collection.total_count.zero? ? "0" : "#{collection.offset_value + 1}-#{[ collection.offset_value + collection.limit_value, collection.total_count ].min}" %>
+        de <%= collection.total_count %>
+            </span>
+    </div>
+
+    <nav class="flex items-center gap-1">
+    <%= link_to url_for(request.query_parameters.merge(page: 1)),
+            class: "p-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 #{'pointer-events-none opacity-40' if collection.current_page == 1}" do %>
+        <i data-lucide="chevrons-left" class="w-4 h-4"></i>
+    <% end %>
+    <%= link_to url_for(request.query_parameters.merge(page: [ collection.current_page - 1, 1 ].max)),
+            class: "p-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 #{'pointer-events-none opacity-40' if collection.current_page == 1}" do %>
+        <i data-lucide="chevron-left" class="w-4 h-4"></i>
+    <% end %>
+
+    <% kaminari_page_range(collection.total_pages, collection.current_page).each do |page| %>
+        <% if page == :gap %>
+            <span class="px-2 text-gray-400">…</span>
+        <% else %>
+        <%= link_to page, url_for(request.query_parameters.merge(page: page)),
+            class: page == collection.current_page ? "w-8 h-8 flex items-center justify-center rounded-lg bg-emerald-600 text-white font-semibold" : "w-8 h-8 flex items-center justify-center rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50" %>
+        <% end %>
+    <% end %>
+
+    <%= link_to url_for(request.query_parameters.merge(page: [ collection.current_page + 1, collection.total_pages ].min)),
+            class: "p-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 #{'pointer-events-none opacity-40' if collection.current_page == collection.total_pages}" do %>
+        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+    <% end %>
+    <%= link_to url_for(request.query_parameters.merge(page: collection.total_pages)),
+            class: "p-2 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50 #{'pointer-events-none opacity-40' if collection.current_page == collection.total_pages}" do %>
+        <i data-lucide="chevrons-right" class="w-4 h-4"></i>
+    <% end %>
+    </nav>
+    </div>
+<% end %>
+

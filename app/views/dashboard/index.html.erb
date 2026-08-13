@@ -28,7 +28,7 @@
       <i data-lucide="users" class="w-6 h-6"></i>
     </div>
     <div>
-      <p class="text-sm text-gray-500">Tutores ativos</p>
+      <p class="text-sm text-gray-500">Tutores Ativos</p>
       <p class="text-2xl font-bold text-gray-800"><%= Tutor.ativos.count %></p>
     </div>
   </div>
@@ -38,7 +38,7 @@
       <i data-lucide="paw-print" class="w-6 h-6"></i>
     </div>
     <div>
-      <p class="text-sm text-gray-500">Pets cadastrados</p>
+      <p class="text-sm text-gray-500">Pets Cadastrados</p>
       <p class="text-2xl font-bold text-gray-800"><%= Pet.count %></p>
     </div>
   </div>
@@ -48,7 +48,7 @@
       <i data-lucide="dna" class="w-6 h-6"></i>
     </div>
     <div>
-      <p class="text-sm text-gray-500">Raças cadastradas</p>
+      <p class="text-sm text-gray-500">Raças Cadastradas</p>
       <p class="text-2xl font-bold text-gray-800"><%= @total_racas %></p>
     </div>
   </div>
@@ -66,9 +66,9 @@
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
   <div class="bg-white rounded-xl shadow p-6 lg:col-span-2">
-    <h3 class="text-sm font-semibold text-gray-700 mb-1">Crescimento no período</h3>
+    <h3 class="text-sm font-semibold text-gray-700 mb-1">Crescimento no Período</h3>
     <p class="text-xs text-gray-400 mb-4">Novos tutores e pets cadastrados</p>
-
+    
     <%= area_chart [
           { name: "Pets", data: @pets_por_mes, color: "#0ea5e9" },
           { name: "Tutores", data: @tutores_por_mes, color: "#059669" }
@@ -82,7 +82,7 @@
   </div>
 
   <div class="bg-white rounded-xl shadow p-6">
-    <h3 class="text-sm font-semibold text-gray-700 mb-1">Pets por raça</h3>
+    <h3 class="text-sm font-semibold text-gray-700 mb-1">Pets por Raça</h3>
     <p class="text-xs text-gray-400 mb-4">Distribuição das raças mais cadastradas</p>
 
     <%= pie_chart @pets_por_raca.map { |(especie, raca), count| ["#{raca.presence || "Não informada"} (#{especie})", count] },
