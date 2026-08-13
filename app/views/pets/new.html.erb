@@ -1,3 +1,9 @@
 <% content_for :title, "Novo pet" %>
-<h2 class="text-xl font-semibold text-gray-800 mb-6">Novo pet</h2>
+
+<div class="mb-6">
+    <%= link_to pets_path, class: "inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700" do %>
+    <i data-lucide="arrow-left" class="w-4 h-4"></i> Voltar para pets
+    <% end %>
+</div>
+
 <%= render "form", pet: @pet %>

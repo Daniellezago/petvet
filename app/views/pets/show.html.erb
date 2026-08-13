@@ -1,12 +1,97 @@
 <% content_for :title, @pet.nome %>
-<div class="bg-white rounded-xl shadow p-6 max-w-lg space-y-3">
-  <h2 class="text-xl font-semibold text-gray-800"><%= @pet.nome %></h2>
-  <p class="text-gray-600"><span class="font-medium">Espécie:</span> <%= @pet.especie %></p>
-  <p class="text-gray-600"><span class="font-medium">Raça:</span> <%= @pet.raca %></p>
-  <p class="text-gray-600"><span class="font-medium">Sexo:</span> <%= @pet.sexo %></p>
-  <p class="text-gray-600"><span class="font-medium">Tutor:</span> <%= link_to @pet.tutor.nome, tutor_path(@pet.tutor), class: "text-emerald-700 hover:underline" %></p>
-  <div class="flex gap-3 pt-4">
-    <%= link_to "Editar", edit_pet_path(@pet), class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition" %>
-    <%= link_to "Voltar", pets_path, class: "px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-50" %>
+
+<div class="mb-6">
+  <%= link_to pets_path, class: "inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700" do %>
+    <i data-lucide="arrow-left" class="w-4 h-4"></i> Voltar para pets
+  <% end %>
+</div>
+
+<div class="bg-white rounded-xl shadow max-w-2xl">
+  <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <% if @pet.foto.attached? %>
+        <%= image_tag @pet.foto, class: "w-14 h-14 rounded-full object-cover border border-gray-200" %>
+      <% else %>
+        <%= pet_avatar(@pet) %>
+      <% end %>
+      <div>
+        <h2 class="text-lg font-semibold text-gray-800"><%= @pet.nome %></h2>
+        <p class="text-xs text-gray-400 uppercase">
+          <%= @pet.especie %><%= " · #{@pet.raca}" if @pet.raca.present? %>
+        </p>
+      </div>
+    </div>
+
+    <% if @pet.castrado? %>
+      <span class="text-xs font-semibold px-2 py-1 rounded-full bg-emerald-100 text-emerald-700">Castrado(a)</span>
+    <% else %>
+      <span class="text-xs font-semibold px-2 py-1 rounded-full bg-gray-100 text-gray-500">Não castrado(a)</span>
+    <% end %>
+  </div>
+
+  <div class="px-6 py-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
+    <div class="flex items-start gap-3">
+      <i data-lucide="user" class="w-4 h-4 text-gray-400 mt-0.5"></i>
+      <div>
+        <p class="text-xs text-gray-400">Tutor</p>
+        <%= link_to @pet.tutor.nome, tutor_path(@pet.tutor), class: "text-sm text-emerald-700 hover:underline" %>
+      </div>
+    </div>
+
+    <div class="flex items-start gap-3">
+      <i data-lucide="venus-and-mars" class="w-4 h-4 text-gray-400 mt-0.5"></i>
+      <div>
+        <p class="text-xs text-gray-400">Sexo</p>
+        <p class="text-sm text-gray-800"><%= @pet.sexo&.capitalize || "-" %></p>
+      </div>
+    </div>
+
+    <div class="flex items-start gap-3">
+      <i data-lucide="cake" class="w-4 h-4 text-gray-400 mt-0.5"></i>
+      <div>
+        <p class="text-xs text-gray-400">Idade</p>
+        <p class="text-sm text-gray-800"><%= @pet.idade || "Não informada" %></p>
+      </div>
+    </div>
+
+    <div class="flex items-start gap-3">
+      <i data-lucide="ruler" class="w-4 h-4 text-gray-400 mt-0.5"></i>
+      <div>
+        <p class="text-xs text-gray-400">Porte</p>
+        <p class="text-sm text-gray-800"><%= @pet.porte&.capitalize %></p>
+      </div>
+    </div>
+
+    <div class="flex items-start gap-3">
+      <i data-lucide="palette" class="w-4 h-4 text-gray-400 mt-0.5"></i>
+      <div>
+        <p class="text-xs text-gray-400">Cor</p>
+        <p class="text-sm text-gray-800"><%= @pet.cor.presence || "-" %></p>
+      </div>
+    </div>
+
+    <div class="flex items-start gap-3">
+      <i data-lucide="scale" class="w-4 h-4 text-gray-400 mt-0.5"></i>
+      <div>
+        <p class="text-xs text-gray-400">Peso atual</p>
+        <p class="text-sm text-gray-800">
+          <% if @pet.peso_atual.present? %>
+            <%= number_with_precision(@pet.peso_atual, precision: 1) %> kg
+          <% else %>
+            Sem registro
+          <% end %>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="px-6 py-4 border-t border-gray-100 flex items-center gap-3">
+    <%= link_to edit_pet_path(@pet), class: "bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition flex items-center gap-2" do %>
+      <i data-lucide="pencil" class="w-4 h-4"></i> Editar
+    <% end %>
+    <%= link_to pets_path, class: "px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 transition" do %>
+      Voltar
+    <% end %>
   </div>
 </div>
+

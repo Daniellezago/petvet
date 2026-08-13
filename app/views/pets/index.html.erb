@@ -1,27 +1,69 @@
 <% content_for :title, "Pets" %>
-<div class="flex justify-between items-center mb-6">
-  <h2 class="text-xl font-semibold text-gray-800">Pets</h2>
-  <%= link_to "Novo pet", new_pet_path, class: "bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded font-semibold transition" %>
-</div>
+
 <div class="bg-white rounded-xl shadow overflow-hidden">
+  <div class="flex justify-between items-center px-6 pt-5 pb-4 border-b border-gray-100">
+    <div class="flex items-center gap-2">
+      <i data-lucide="paw-print" class="w-5 h-5 text-emerald-600"></i>
+      <div>
+        <h3 class="text-base font-semibold text-gray-800">Lista de Pets</h3>
+        <p class="text-xs text-gray-400 mt-0.5">
+          <%= pluralize(@pets.total_count, "pet cadastrado", "pets cadastrados") %>
+        </p>
+      </div>
+    </div>
+    <%= link_to new_pet_path, class: "bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded font-semibold transition flex items-center gap-2" do %>
+      <i data-lucide="plus" class="w-4 h-4"></i> Novo Pet
+    <% end %>
+  </div>
+
+  <%= form_with url: pets_path, method: :get, local: true, class: "px-6 py-4 border-b border-gray-100" do |f| %>
+    <div class="relative max-w-md">
+      <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+      <%= f.text_field :busca, value: params[:busca], placeholder: "Buscar por nome do pet, espécie ou tutor...",
+          class: "w-full pl-9 rounded border border-gray-300 p-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" %>
+    </div>
+  <% end %>
+
   <table class="w-full text-sm text-left">
     <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
       <tr>
-        <th class="px-6 py-3">Nome</th>
-        <th class="px-6 py-3">Espécie</th>
-        <th class="px-6 py-3">Idade</th>
-        <th class="px-6 py-3">Castrado</th>
-        <th class="px-6 py-3">Porte</th>
+        <th class="px-6 py-3"><%= pet_sortable_column_link("Nome do Pet", "nome") %></th>
         <th class="px-6 py-3">Tutor</th>
+        <th class="px-6 py-3">Sexo</th>
+        <th class="px-6 py-3"><%= pet_sortable_column_link("Idade", "data_nascimento") %></th>
+        <th class="px-6 py-3"><%= pet_sortable_column_link("Porte", "porte") %></th>
+        <th class="px-6 py-3"><%= pet_sortable_column_link("Cor", "cor") %></th>
+        <th class="px-6 py-3"><%= pet_sortable_column_link("Peso", "peso_atual") %></th>
+        <th class="px-6 py-3">Castrado</th>
         <th class="px-6 py-3">Ações</th>
       </tr>
     </thead>
     <tbody class="divide-y divide-gray-100">
       <% @pets.each do |pet| %>
         <tr class="hover:bg-gray-50">
-          <td class="px-6 py-3 font-medium text-gray-800"><%= pet.nome %></td>
-          <td class="px-6 py-3 text-gray-600"><%= pet.especie %></td>
+          <td class="px-6 py-3">
+            <div class="flex items-center gap-3">
+              <%= pet_avatar(pet) %>
+              <div>
+                <p class="font-medium text-gray-800"><%= pet.nome %></p>
+                <p class="text-xs text-gray-400 uppercase">
+                  <%= pet.especie %><%= " · #{pet.raca}" if pet.raca.present? %>
+                </p>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-3 text-gray-600"><%= pet.tutor.nome %></td>
+          <td class="px-6 py-3 text-gray-600"><%= pet.sexo&.capitalize || "-" %></td>
           <td class="px-6 py-3 text-gray-600"><%= pet.idade || "-" %></td>
+          <td class="px-6 py-3 text-gray-600"><%= pet.porte&.capitalize %></td>
+          <td class="px-6 py-3 text-gray-600"><%= pet.cor.presence || "-" %></td>
+          <td class="px-6 py-3 text-gray-600">
+            <% if pet.peso_atual.present? %>
+              <%= number_with_precision(pet.peso_atual, precision: 1) %> kg
+            <% else %>
+              <span class="text-gray-400">Sem registro</span>
+            <% end %>
+          </td>
           <td class="px-6 py-3">
             <% if pet.castrado? %>
               <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
@@ -29,8 +71,6 @@
               <i data-lucide="x-circle" class="w-4 h-4 text-gray-300"></i>
             <% end %>
           </td>
-          <td class="px-6 py-3 text-gray-600"><%= pet.porte %></td>
-          <td class="px-6 py-3 text-gray-600"><%= pet.tutor.nome %></td>
           <td class="px-6 py-3 space-x-2">
             <%= link_to "Ver", pet_path(pet), class: "text-emerald-700 hover:underline" %>
             <%= link_to "Editar", edit_pet_path(pet), class: "text-blue-600 hover:underline" %>
@@ -39,4 +79,14 @@
       <% end %>
     </tbody>
   </table>
+
+  <% if @pets.empty? %>
+    <p class="text-center text-gray-400 py-8 text-sm">Nenhum pet encontrado.</p>
+  <% end %>
 </div>
+
+<div class="mt-4">
+  <%= render "shared/pagination", collection: @pets %>
+</div>
+
+
