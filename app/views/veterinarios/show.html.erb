@@ -1,0 +1,81 @@
+<% content_for :title, @veterinario.nome %>
+
+<div class="mb-6">
+    <%= link_to veterinarios_path, class: "inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700" do %>
+    <i data-lucide="arrow-left" class="w-4 h-4"></i> Voltar para veterinários
+<% end %>
+</div>
+
+<div class="bg-white rounded-xl shadow max-w-2xl">
+    <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+    <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style="background-color: <%= @veterinario.cor_agenda %>20">
+        <i data-lucide="stethoscope" class="w-6 h-6" style="color: <%= @veterinario.cor_agenda %>"></i>
+    </div>
+    <div>
+        <h2 class="text-lg font-semibold text-gray-800"><%= @veterinario.nome %></h2>
+        <% if @veterinario.ativo? %>
+        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Ativo</span>
+        <% else %>
+        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">Inativo</span>
+        <% end %>
+    </div>
+    </div>
+</div>
+
+<div class="px-6 py-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
+    <div class="flex items-start gap-3">
+        <i data-lucide="badge-check" class="w-4 h-4 text-gray-400 mt-0.5"></i>
+    <div>
+        <p class="text-xs text-gray-400">CRMV</p>
+        <p class="text-sm text-gray-800 font-mono"><%= @veterinario.crmv %></p>
+    </div>
+</div>
+
+    <div class="flex items-start gap-3">
+        <i data-lucide="stethoscope" class="w-4 h-4 text-gray-400 mt-0.5"></i>
+    <div>
+        <p class="text-xs text-gray-400">Especialidade</p>
+        <p class="text-sm text-gray-800"><%= @veterinario.especialidade.presence || "-" %></p>
+    </div>
+    </div>
+
+    <div class="flex items-start gap-3">
+        <i data-lucide="mail" class="w-4 h-4 text-gray-400 mt-0.5"></i>
+    <div>
+        <p class="text-xs text-gray-400">Usuário vinculado</p>
+        <p class="text-sm text-gray-800"><%= @veterinario.user.email %></p>
+    </div>
+    </div>
+
+    <div class="flex items-start gap-3">
+        <i data-lucide="palette" class="w-4 h-4 text-gray-400 mt-0.5"></i>
+    <div>
+        <p class="text-xs text-gray-400">Cor na agenda</p>
+        <div class="flex items-center gap-2 mt-0.5">
+            <span class="w-4 h-4 rounded-full border border-gray-200" style="background-color: <%= @veterinario.cor_agenda %>"></span>
+            <p class="text-sm text-gray-800 font-mono"><%= @veterinario.cor_agenda %></p>
+        </div>
+    </div>
+    </div>
+</div>
+
+<div class="px-6 py-4 border-t border-gray-100 flex items-center gap-3">
+    <%= link_to edit_veterinario_path(@veterinario), class: "bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition flex items-center gap-2" do %>
+        <i data-lucide="pencil" class="w-4 h-4"></i> Editar
+<% end %>
+    <%= link_to veterinarios_path, class: "px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 transition" do %>
+        Voltar
+<% end %>
+
+    <% if @veterinario.ativo? %>
+        <%= link_to "Desativar", veterinario_path(@veterinario),
+            data: { turbo_method: :delete, turbo_confirm: "Tem certeza que deseja desativar #{@veterinario.nome}?" },
+            class: "ml-auto px-5 py-2.5 rounded-lg border border-red-200 text-red-600 text-sm font-medium hover:bg-red-50 transition" %>
+    <% else %>
+        <%= link_to "Reativar", reativar_veterinario_path(@veterinario),
+            data: { turbo_method: :patch, turbo_confirm: "Reativar #{@veterinario.nome}?" },
+            class: "ml-auto px-5 py-2.5 rounded-lg border border-emerald-200 text-emerald-700 text-sm font-medium hover:bg-emerald-50 transition" %>
+    <% end %>
+</div>
+</div>

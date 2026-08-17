@@ -22,6 +22,12 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :veterinarios do
+    member do
+      patch :reativar
+    end
+  end
+
   resources :usuarios, only: [ :index, :show, :new, :create, :edit, :update ]
   resources :pets, only: [ :index, :show, :new, :create, :edit, :update ]
   resources :pesos, only: [ :index, :show, :new, :create, :edit, :update ]

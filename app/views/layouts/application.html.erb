@@ -51,9 +51,11 @@
       <%= link_to pets_path, class: "flex items-center gap-3 px-3 py-2 rounded hover:bg-emerald-600 transition" do %>
         <i data-lucide="paw-print" class="w-5 h-5"></i> Pets
       <% end %>
-      <span class="flex items-center gap-3 px-3 py-2 rounded text-emerald-400 cursor-not-allowed opacity-60">
-        <i data-lucide="user-round" class="w-5 h-5"></i> Veterinários <span class="text-xs">(em breve)</span>
-      </span>
+      <% if current_user.admin? %>
+        <%= link_to veterinarios_path, class: "flex items-center gap-3 px-3 py-2 rounded hover:bg-emerald-600 transition" do %>
+          <i data-lucide="user-round" class="w-5 h-5"></i> Veterinários
+        <% end %>
+      <% end %>
       <% if current_user.admin? %>
         <%= link_to usuarios_path, class: "flex items-center gap-3 px-3 py-2 rounded hover:bg-emerald-600 transition" do %>
           <i data-lucide="user-cog" class="w-5 h-5"></i> Usuários
