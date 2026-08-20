@@ -1,39 +1,39 @@
 <div class="bg-white rounded-xl shadow-md p-8 w-full max-w-sm">
-
   <div class="text-center mb-6">
     <div class="text-4xl mb-2">🐾</div>
     <h2 class="text-2xl font-bold text-gray-800">PetVet</h2>
     <p class="text-sm text-gray-500 mt-1">Entre com sua conta</p>
   </div>
-
   <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
     <div class="mb-4">
       <%= f.label :email, "Email", class: "block text-sm font-medium text-gray-700 mb-1" %>
       <%= f.email_field :email, autofocus: true, autocomplete: "email",
           class: "w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" %>
     </div>
-
     <div class="mb-4">
       <%= f.label :password, "Senha", class: "block text-sm font-medium text-gray-700 mb-1" %>
-      <%= f.password_field :password, autocomplete: "current-password",
-          class: "w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" %>
+      <div class="relative" data-controller="password-visibility">
+        <%= f.password_field :password, autocomplete: "current-password",
+            data: { password_visibility_target: "input" },
+            class: "w-full rounded border border-gray-300 p-2 pr-10 focus:outline-none focus:ring-2 focus:ring-emerald-500" %>
+        <button type="button" data-action="click->password-visibility#toggle"
+          class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+          <i data-lucide="eye" data-password-visibility-target="icon" class="w-4 h-4"></i>
+        </button>
+      </div>
     </div>
-
     <% if devise_mapping.rememberable? %>
       <div class="mb-6 flex items-center gap-2">
         <%= f.check_box :remember_me, class: "rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" %>
         <%= f.label :remember_me, "Lembrar de mim", class: "text-sm text-gray-600" %>
       </div>
     <% end %>
-
     <div>
       <%= f.submit "Entrar",
           class: "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded p-2 transition cursor-pointer" %>
     </div>
   <% end %>
-
   <div class="mt-6 text-center text-sm text-gray-500">
     <%= render "devise/shared/links" %>
   </div>
-
 </div>

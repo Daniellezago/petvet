@@ -1,82 +1,118 @@
 <%= form_with model: veterinario, local: true, class: "bg-white rounded-xl shadow max-w-2xl" do |f| %>
-    <div class="px-6 py-5 border-b border-gray-100 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center shrink-0">
-            <i data-lucide="stethoscope" class="w-5 h-5 text-emerald-600"></i>
+  <div class="px-6 py-5 border-b border-gray-100 flex items-center gap-3">
+    <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center shrink-0">
+      <i data-lucide="stethoscope" class="w-5 h-5 text-emerald-600"></i>
     </div>
-        <div>
-        <h3 class="text-base font-semibold text-gray-800">
-            <%= veterinario.persisted? ? "Dados do Veterinário" : "Cadastrar Novo Veterinário" %>
-        </h3>
-        <p class="text-xs text-gray-400">
-            <%= veterinario.persisted? ? "Atualize as informações abaixo" : "Preencha as informações para o cadastro" %>
-        </p>
+    <div>
+      <h3 class="text-base font-semibold text-gray-800">
+        <%= veterinario.persisted? ? "Dados do Veterinário" : "Cadastrar Novo Veterinário" %>
+      </h3>
+      <p class="text-xs text-gray-400">
+        <%= veterinario.persisted? ? "Atualize as informações profissionais abaixo" : "Cria o login e o perfil profissional juntos" %>
+      </p>
     </div>
-        </div>
-
-    <div class="px-6 py-6 space-y-5">
-            <% if veterinario.errors.any? %>
-    <div class="bg-red-50 border border-red-100 text-red-700 text-sm rounded-lg p-4 flex gap-3">
+  </div>
+  <div class="px-6 py-6 space-y-5">
+    <% if veterinario.errors.any? %>
+      <div class="bg-red-50 border border-red-100 text-red-700 text-sm rounded-lg p-4 flex gap-3">
         <i data-lucide="alert-circle" class="w-4 h-4 shrink-0 mt-0.5"></i>
         <div>
-            <p class="font-semibold mb-1">
-                <%= pluralize(veterinario.errors.count, "erro encontrado", "erros encontrados") %>
-            </p>
-            <ul class="list-disc list-inside space-y-0.5">
-                <% veterinario.errors.full_messages.each do |msg| %>
-                    <li><%= msg %></li>
+          <p class="font-semibold mb-1">
+            <%= pluralize(veterinario.errors.count, "erro encontrado", "erros encontrados") %>
+          </p>
+          <ul class="list-disc list-inside space-y-0.5">
+            <% veterinario.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
             <% end %>
-            </ul>
+          </ul>
         </div>
-    </div>
-<% end %>
-
-    <div>
-        <%= f.label :user_id, "Usuário vinculado (login)", class: "block text-sm font-medium text-gray-700 mb-1" %>
-        <%= f.collection_select :user_id, usuarios_disponiveis, :id, :email, { prompt: "Selecione o usuário" },
-            class: "w-full rounded-lg border border-gray-300 p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none" %>
-        <p class="text-xs text-gray-400 mt-1">
-        Só aparecem usuários com papel "Veterinário" que ainda não têm um perfil profissional cadastrado.
+      </div>
+    <% end %>
+    <% if veterinario.persisted? %>
+      <div class="bg-gray-50 rounded-lg p-4 flex items-center gap-3">
+        <i data-lucide="mail" class="w-4 h-4 text-gray-400"></i>
+        <div>
+          <p class="text-xs text-gray-400">Login vinculado</p>
+          <p class="text-sm text-gray-700"><%= veterinario.user.email %></p>
+        </div>
+        <p class="text-xs text-gray-400 ml-auto">Pra trocar e-mail/senha, use a tela de Usuários.</p>
+      </div>
+    <% else %>
+      <div class="border border-gray-200 rounded-lg p-4 space-y-4">
+        <p class="text-sm font-medium text-gray-700 flex items-center gap-2">
+          <i data-lucide="key-round" class="w-4 h-4 text-emerald-600"></i> Acesso ao sistema
         </p>
-    </div>
-
-    <div>
-        <%= f.label :nome, class: "block text-sm font-medium text-gray-700 mb-1" %>
-        <div class="relative">
-            <i data-lucide="user" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            <%= f.text_field :nome, placeholder: "Nome completo",
-                class: "w-full pl-9 rounded-lg border border-gray-300 p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none" %>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        <div>
-            <%= f.label :crmv, "CRMV", class: "block text-sm font-medium text-gray-700 mb-1" %>
-        <div class="relative">
-            <i data-lucide="badge-check" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            <%= f.text_field :crmv, placeholder: "Ex: CRMV-SP 12345",
-                class: "w-full pl-9 rounded-lg border border-gray-300 p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none" %>
-        </div>
-    </div>
-        <div>
-            <%= f.label :especialidade, class: "block text-sm font-medium text-gray-700 mb-1" %>
-            <%= f.text_field :especialidade, placeholder: "Ex: Dermatologia (opcional)",
+        <%= f.fields_for :user do |uf| %>
+          <div>
+            <%= uf.label :email, "E-mail de login", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= uf.email_field :email, placeholder: "email@exemplo.com",
                 class: "w-full rounded-lg border border-gray-300 p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none" %>
-        </div>
-    </div>
-
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <%= uf.label :password, "Senha", class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <div class="relative" data-controller="password-visibility">
+                <%= uf.password_field :password, autocomplete: "new-password",
+                    data: { password_visibility_target: "input" },
+                    class: "w-full rounded-lg border border-gray-300 p-2.5 pr-10 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none" %>
+                <button type="button" data-action="click->password-visibility#toggle"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                  <i data-lucide="eye" data-password-visibility-target="icon" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+            <div>
+              <%= uf.label :password_confirmation, "Confirme a senha", class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <div class="relative" data-controller="password-visibility">
+                <%= uf.password_field :password_confirmation, autocomplete: "new-password",
+            data: { password_visibility_target: "input" },
+            class: "w-full rounded-lg border border-gray-300 p-2.5 pr-10 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none" %>
+                <button type="button" data-action="click->password-visibility#toggle"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                  <i data-lucide="eye" data-password-visibility-target="icon" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
     <div>
-        <%= f.label :cor_agenda, "Cor de identificação na agenda", class: "block text-sm font-medium text-gray-700 mb-1" %>
-        <div class="flex items-center gap-3">
-            <%= f.color_field :cor_agenda, class: "w-12 h-10 rounded border border-gray-300 cursor-pointer" %>
-            <span class="text-xs text-gray-400">Usada para diferenciar a agenda deste veterinário visualmente.</span>
+      <%= f.label :nome, class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <div class="relative">
+        <i data-lucide="user" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+        <%= f.text_field :nome, placeholder: "Nome completo",
+            class: "w-full pl-9 rounded-lg border border-gray-300 p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none" %>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div>
+        <%= f.label :crmv, "CRMV", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <div class="relative">
+          <i data-lucide="badge-check" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          <%= f.text_field :crmv, placeholder: "Ex: CRMV-SP 12345",
+                class: "w-full pl-9 rounded-lg border border-gray-300 p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none" %>
         </div>
+      </div>
+      <div>
+        <%= f.label :especialidade, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :especialidade, placeholder: "Ex: Dermatologia (opcional)",
+            class: "w-full rounded-lg border border-gray-300 p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none" %>
+      </div>
     </div>
-</div>
-
-    <div class="px-6 py-4 border-t border-gray-100 flex items-center gap-3">
-        <%= f.submit (veterinario.persisted? ? "Salvar alterações" : "Cadastrar veterinário"),
+    <div>
+      <%= f.label :cor_agenda, "Cor de identificação na agenda", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <div class="flex items-center gap-3">
+        <%= f.color_field :cor_agenda, class: "w-12 h-10 rounded border border-gray-300 cursor-pointer p-0" %>
+        <span class="text-xs text-gray-400">Usada pra diferenciar a agenda deste veterinário visualmente.</span>
+      </div>
+    </div>
+  </div>
+  <div class="px-6 py-4 border-t border-gray-100 flex items-center gap-3">
+    <%= f.submit (veterinario.persisted? ? "Salvar alterações" : "Cadastrar veterinário"),
             class: "bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition cursor-pointer" %>
-        <%= link_to "Cancelar", veterinarios_path,
+    <%= link_to "Cancelar", veterinarios_path,
             class: "px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 transition" %>
-    </div>
+  </div>
 <% end %>
+
