@@ -6,5 +6,21 @@ pt-BR:
       previous: "&lsaquo; Anterior"
       next: "Próxima &rsaquo;"
       truncate: "&hellip;"
-      
+
+  activerecord:
+    attributes:
+      user:
+        email: "E-mail"
+        password: "Senha"
+        password_confirmation: "Confirmação de senha"
+        current_password: "Senha atual"
+        remember_me: "Lembrar de mim"
+      veterinario:
+        user: "Usuário"
+    errors:
+      messages:
+        invalid_password: "deve conter ao menos uma letra minúscula, uma maiúscula, um número e um caractere especial"
+              
+
+
 
