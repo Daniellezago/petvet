@@ -1,25 +1,53 @@
-<h2>Change your password</h2>
-
-<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
+<div class="bg-white rounded-xl shadow-md p-8 w-full max-w-sm">
+  <div class="text-center mb-6">
+    <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-emerald-100 flex items-center justify-center">
+      <svg width="26" height="26" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="15" r="5" fill="#047857"/>
+        <circle cx="5" cy="9" r="2.3" fill="#047857"/>
+        <circle cx="9.5" cy="4.5" r="2.3" fill="#047857"/>
+        <circle cx="14.5" cy="4.5" r="2.3" fill="#047857"/>
+        <circle cx="19" cy="9" r="2.3" fill="#047857"/>
+      </svg>
+    </div>
+    <h2 class="text-2xl font-bold text-gray-800">PetVet</h2>
+    <p class="text-sm text-gray-500 mt-1">Defina sua nova senha</p>
+  </div>
   <%= render "devise/shared/error_messages", resource: resource %>
-  <%= f.hidden_field :reset_password_token %>
-
-  <div class="field">
-    <p><%= f.label :password, "New password" %></p>
-    <% if @minimum_password_length %>
-      <p><em>(<%= @minimum_password_length %> characters minimum)</em></p>
-    <% end %>
-    <p><%= f.password_field :password, autofocus: true, autocomplete: "new-password" %></p>
+  <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
+    <%= f.hidden_field :reset_password_token %>
+    <div class="mb-4">
+      <%= f.label :password, "Nova senha", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <% if @minimum_password_length %>
+        <p class="text-xs text-gray-400 mb-1"><%= @minimum_password_length %> caracteres no mínimo</p>
+      <% end %>
+      <div class="relative" data-controller="password-visibility">
+        <%= f.password_field :password, autofocus: true, autocomplete: "new-password",
+            data: { password_visibility_target: "input" },
+            class: "w-full rounded border border-gray-300 p-2 pr-10 focus:outline-none focus:ring-2 focus:ring-emerald-500" %>
+        <button type="button" data-action="click->password-visibility#toggle"
+          class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+          <i data-lucide="eye" data-password-visibility-target="icon" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+    <div class="mb-6">
+      <%= f.label :password_confirmation, "Confirme a nova senha", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <div class="relative" data-controller="password-visibility">
+        <%= f.password_field :password_confirmation, autocomplete: "new-password",
+            data: { password_visibility_target: "input" },
+            class: "w-full rounded border border-gray-300 p-2 pr-10 focus:outline-none focus:ring-2 focus:ring-emerald-500" %>
+        <button type="button" data-action="click->password-visibility#toggle"
+          class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+          <i data-lucide="eye" data-password-visibility-target="icon" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+    <div>
+      <%= f.submit "Alterar minha senha",
+          class: "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded p-2 transition cursor-pointer" %>
+    </div>
+  <% end %>
+  <div class="mt-6 text-center text-sm text-gray-500">
+    <%= render "devise/shared/links" %>
   </div>
-
-  <div class="field">
-    <p><%= f.label :password_confirmation, "Confirm new password" %></p>
-    <p><%= f.password_field :password_confirmation, autocomplete: "new-password" %></p>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Change my password" %>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+</div>

@@ -1,29 +1,30 @@
 <div class="bg-white rounded-xl shadow-md p-8 w-full max-w-sm">
-
   <div class="text-center mb-6">
-    <div class="text-4xl mb-2">🐾</div>
+    <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-emerald-100 flex items-center justify-center">
+      <svg width="26" height="26" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="15" r="5" fill="#047857"/>
+        <circle cx="5" cy="9" r="2.3" fill="#047857"/>
+        <circle cx="9.5" cy="4.5" r="2.3" fill="#047857"/>
+        <circle cx="14.5" cy="4.5" r="2.3" fill="#047857"/>
+        <circle cx="19" cy="9" r="2.3" fill="#047857"/>
+      </svg>
+    </div>
     <h2 class="text-2xl font-bold text-gray-800">PetVet</h2>
     <p class="text-sm text-gray-500 mt-1">Esqueceu sua senha?</p>
   </div>
-
   <%= render "devise/shared/error_messages", resource: resource %>
-
   <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
     <div class="mb-6">
       <%= f.label :email, "Email", class: "block text-sm font-medium text-gray-700 mb-1" %>
       <%= f.email_field :email, autofocus: true, autocomplete: "email",
           class: "w-full rounded border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" %>
     </div>
-
     <div>
       <%= f.submit "Enviar instruções de redefinição de senha",
           class: "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded p-2 transition cursor-pointer" %>
     </div>
   <% end %>
-
   <div class="mt-6 text-center text-sm text-gray-500">
     <%= render "devise/shared/links" %>
   </div>
-
 </div>
-

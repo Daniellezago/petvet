@@ -31,15 +31,19 @@ class VeterinariosController < ApplicationController
 
   def new
     @veterinario = Veterinario.new
+    @veterinario.build_user(role: :veterinario)
     authorize @veterinario
   end
 
   def create
     @veterinario = Veterinario.new(veterinario_params)
+    # SEGURANÇA: o papel do usuário nunca vem do formulário, é sempre forçado aqui.
+    # Impede que alguém manipule o request e crie um admin disfarçado de veterinário.
+    @veterinario.user&.role = :veterinario
     authorize @veterinario
 
     if @veterinario.save
-      redirect_to @veterinario, notice: "Veterinário cadastrado com sucesso!"
+      redirect_to @veterinario, notice: "Veterinário cadastrado com sucesso! Login criado para #{@veterinario.user.email}."
     else
       render :new, status: :unprocessable_entity
     end
@@ -52,7 +56,8 @@ class VeterinariosController < ApplicationController
   def update
     authorize @veterinario
 
-    if @veterinario.update(veterinario_params)
+    # Na edição não mexemos no login (email/senha) — só nos dados profissionais.
+    if @veterinario.update(veterinario_params_edicao)
       redirect_to @veterinario, notice: "Veterinário atualizado com sucesso!"
     else
       render :edit, status: :unprocessable_entity
@@ -78,14 +83,13 @@ class VeterinariosController < ApplicationController
   end
 
   def veterinario_params
-    params.require(:veterinario).permit(:nome, :crmv, :especialidade, :cor_agenda, :user_id)
+    params.require(:veterinario).permit(
+      :nome, :crmv, :especialidade, :cor_agenda,
+      user_attributes: [ :email, :password, :password_confirmation ]
+    )
   end
 
-  # Usuários com role=veterinario que ainda não têm perfil de Veterinario criado.
-  # Na edição, inclui o próprio usuário já vinculado a este registro (senão ele
-  # desapareceria da lista e o formulário quebraria a seleção atual).
-  helper_method def usuarios_disponiveis
-    ids_ocupados = Veterinario.where.not(id: @veterinario&.id).pluck(:user_id)
-    User.veterinario.where.not(id: ids_ocupados)
+  def veterinario_params_edicao
+    params.require(:veterinario).permit(:nome, :crmv, :especialidade, :cor_agenda)
   end
 end

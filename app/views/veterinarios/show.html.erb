@@ -50,13 +50,10 @@
 
     <div class="flex items-start gap-3">
         <i data-lucide="palette" class="w-4 h-4 text-gray-400 mt-0.5"></i>
-    <div>
-        <p class="text-xs text-gray-400">Cor na agenda</p>
-        <div class="flex items-center gap-2 mt-0.5">
-            <span class="w-4 h-4 rounded-full border border-gray-200" style="background-color: <%= @veterinario.cor_agenda %>"></span>
-            <p class="text-sm text-gray-800 font-mono"><%= @veterinario.cor_agenda %></p>
+        <div>
+            <p class="text-xs text-gray-400">Cor na agenda</p>
+            <span class="inline-block w-6 h-6 rounded-full border border-gray-200 mt-1" style="background-color: <%= @veterinario.cor_agenda %>"></span>
         </div>
-    </div>
     </div>
 </div>
 
