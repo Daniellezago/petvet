@@ -27,6 +27,54 @@ class User < ApplicationRecord
 
   validates :role, presence: true
 
+  # Criptografia nativa do Rails: o valor fica protegido no banco,
+  # mesmo que alguém consiga acesso direto ao arquivo do banco de dados.
+  encrypts :otp_secret
+
+  # --- Autenticação de dois fatores (2FA) ---
+
+  # Gera uma nova chave secreta TOTP para o usuário (usada ao ativar o 2FA)
+  def generate_otp_secret!
+    update!(otp_secret: ROTP::Base32.random)
+  end
+
+  # URL usada para gerar o QR code que o Google Authenticator/Microsoft Authenticator escaneia
+  def otp_provisioning_uri
+    ROTP::TOTP.new(otp_secret, issuer: "PetVet").provisioning_uri(email)
+  end
+
+  # Confere se o código de 6 dígitos digitado é válido neste momento
+  # (drift_behind aceita um código "atrasado" de até ~30s, útil quando o
+  # relógio do celular está levemente dessincronizado)
+  def verify_otp(codigo)
+    return false if otp_secret.blank?
+
+    ROTP::TOTP.new(otp_secret).verify(codigo, drift_behind: 1)
+  end
+
+  # Gera 10 códigos de backup novos, guarda o hash de cada um (nunca o código em texto puro)
+  # e devolve os códigos originais — que só podem ser mostrados nesse momento, uma única vez.
+  def generate_backup_codes!
+    codigos = Array.new(10) { SecureRandom.alphanumeric(10).upcase }
+    hashes = codigos.map { |codigo| BCrypt::Password.create(codigo) }
+    update!(otp_backup_codes: hashes.to_json)
+    codigos
+  end
+
+  # Tenta "gastar" um código de backup. Se bater com algum hash guardado,
+  # remove esse código da lista (uso único) e retorna true.
+  def consume_backup_code!(codigo)
+    return false if otp_backup_codes.blank?
+
+    hashes = JSON.parse(otp_backup_codes)
+    indice = hashes.index { |hash| BCrypt::Password.new(hash) == codigo }
+    return false if indice.nil?
+
+    hashes.delete_at(indice)
+    update!(otp_backup_codes: hashes.to_json)
+    true
+  end
+
   scope :ativos, -> { where(ativo: true) }
 
   private

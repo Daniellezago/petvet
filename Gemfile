@@ -84,6 +84,11 @@ gem "jwt"
 
 gem "pundit"
 
-gem "kaminari" # paginação
+# Para paginação
+gem "kaminari"
 
 gem "cpf_faker"
+
+# Autenticação de Dois Fatores (2FA) e Geração de QR Code
+gem "rotp"
+gem "rqrcode"
