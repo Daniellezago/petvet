@@ -49,7 +49,10 @@ class User < ApplicationRecord
   def verify_otp(codigo)
     return false if otp_secret.blank?
 
-    ROTP::TOTP.new(otp_secret).verify(codigo, drift_behind: 1)
+    codigo_limpo = codigo.to_s.gsub(/\s/, "")
+    return false unless codigo_limpo.match?(/\A\d{6}\z/)
+
+    ROTP::TOTP.new(otp_secret).verify(codigo_limpo, drift_behind: 30, drift_ahead: 30).present?
   end
 
   # Gera 10 códigos de backup novos, guarda o hash de cada um (nunca o código em texto puro)
