@@ -191,7 +191,7 @@
             </h1>
 
             <div class="flex items-center gap-4">
-              <span class="text-sm text-gray-600"><%= current_user.email %></span>
+              <%= link_to current_user.email, perfil_path, class: "text-sm text-gray-600 hover:text-emerald-700 hover:underline" %>
               <%= button_to "Sair", destroy_user_session_path, method: :delete,
                   class: "text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded transition" %>
             </div>

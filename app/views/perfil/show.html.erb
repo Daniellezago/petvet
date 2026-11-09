@@ -1,0 +1,61 @@
+<% content_for :title, "Meu Perfil" %>
+
+<div class="max-w-2xl space-y-6">
+    <div class="bg-white rounded-xl shadow">
+        <div class="px-6 py-5 border-b border-gray-100 flex items-center gap-3">
+            <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center shrink-0">
+                <i data-lucide="user" class="w-6 h-6 text-emerald-600"></i>
+            </div>
+            <div>
+                <h2 class="text-lg font-semibold text-gray-800"><%= current_user.email %></h2>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+                    <%= current_user.role.capitalize %>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="px-6 py-6">
+        <% if current_user.otp_required_for_login? %>
+            <div class="flex items-center gap-2 mb-4">
+                <span class="text-xs font-semibold px-2 py-1 rounded-full bg-emerald-100 text-emerald-700">Ativa</span>
+            </div>
+
+            <p class="text-sm text-gray-600 mb-5">
+                Sua conta está protegida. A cada login, além da senha, você precisa informar o código do seu app autenticador.
+            </p>
+
+            <%= button_to "Gerar novos códigos de backup", gerar_backup_codes_dois_fatores_path, method: :post,
+                class: "px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 transition" %>
+
+            <div class="mt-6 pt-6 border-t border-gray-100">
+                <p class="text-sm font-medium text-red-700 mb-2">Desativar autenticação de dois fatores</p>
+                <%= form_with url: dois_fatores_path, method: :delete, local: true, class: "flex items-end gap-3" do |f| %>
+                    <div class="flex-1 max-w-xs">
+                        <%= f.label :senha_atual, "Confirme sua senha", class: "block text-xs text-gray-500 mb-1" %>
+                        <%= f.password_field :senha_atual, required: true, 
+                            class: "w-full rounded  border border-gray-300 p-2 text-sm focus:ring-2 focus:ring-red-400 focus:outline-none" %>
+                    </div>
+                    <%= f.submit "Desativar", data: { turbo_confirm: "Tem certeza? Isso reduz a segurança da sua conta." },
+                        class: "px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-semibold transition cursor-pointer"  %>
+                <% end %>
+            </div>
+        <% else %>
+            <div class="bg-amber-50 border border-amber-100 text-amber-800 text-sm rounded-lg p-4 flex gap-3 mb-5">
+                <i data-lucide="alert-triangle" class="w-4 h-4 shrink-0 mt-0.5"></i>
+                <p>A autenticação de dois fatores é obrigatória no Petvet. Ative agora para continuar usando o sistema normalmente.</p>
+            </div>
+
+            <%= link_to novo_dois_fatores_path,
+                class: "bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition inline-flex items-center gap-2" do %>
+                <i data-lucide="shield-plus" class="w-4 h-4"></i> Ativar agora
+            <% end %>
+        <% end %>
+        </div>
+    </div> 
+</div>
+
+
+
+
+

@@ -16,6 +16,21 @@ Rails.application.routes.draw do
   get "dashboard/index"
   root to: "dashboard#index"
 
+  # =========================================
+  # PERFIL E AUTENTICAÇÃO DOIS FATORES (2FA)
+  # =========================================
+  get    "perfil", to: "perfil#show", as: "perfil"
+
+  get    "dois_fatores/novo",              to: "dois_fatores#new",               as: "novo_dois_fatores"
+  post   "dois_fatores",                   to: "dois_fatores#create",            as: "dois_fatores"
+  delete "dois_fatores",                   to: "dois_fatores#destroy"
+  get    "dois_fatores/codigos_backup",    to: "dois_fatores#codigos_backup",    as: "codigos_backup_dois_fatores"
+  post   "dois_fatores/backup_codes/gerar", to: "dois_fatores#gerar_backup_codes", as: "gerar_backup_codes_dois_fatores"
+
+  # ========================================
+  # RECURSOS WEB
+  # ========================================
+
   resources :tutores do
     member do
       patch :reativar
@@ -37,9 +52,9 @@ Rails.application.routes.draw do
   resources :agendamentos
   resources :contratos
 
-  # ================================
+  # =======================================================
   # ROTAS API (JWT) — reaproveitam o scope :user do Devise
-  # ================================
+  # =======================================================
   devise_scope :user do
     namespace :api do
       namespace :v1 do
